@@ -1,5 +1,5 @@
 import './App.css';
-import Signup from './components/Signup'; // This should match the file name casing exactly.
+import Signup from './components/signup'; // This should match the file name casing exactly.
 
 
 
