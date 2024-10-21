@@ -1,0 +1,107 @@
+/* Signup Form Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    margin-top: 40px;
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 10px; /* Rounded corners for a modern look */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 500px; /* Limit max-width */
+  }
+  
+  /* Header Section for Signup */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  /* Signup Form Title */
+  .text {
+    color: #3c009d;
+    font-size: 36px;
+    font-weight: 700;
+  }
+  
+  /* Underline */
+  .underline {
+    width: 61px;
+    height: 6px;
+    background: #3c009d;
+    border-radius: 9px;
+  }
+  
+  /* Input Fields Section */
+  .inputs {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Input Field Styling */
+  .input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 100%;
+    max-width: 480px; /* Restrict the max width */
+    height: 60px;
+    background: #f0f0f0;
+    border-radius: 6px;
+    padding: 0 10px; /* Added padding inside input box */
+  }
+  
+  /* Input Field Elements */
+  .input input {
+    flex: 1;
+    height: 40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #333;
+    font-size: 18px;
+    padding-left: 10px; /* Padding to align text properly */
+  }
+  
+  /* Submit Container */
+  .submit-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    margin-top: 40px;
+  }
+  
+  /* Submit Button */
+  .submit {
+    background-color: #3c009d;
+    color: white;
+    font-size: 18px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit:hover {
+    background-color: #32007f;
+  }
+  
+  /* Additional Links */
+  .existingStudent, .existingManager {
+    color: #3c009d;
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+ 
