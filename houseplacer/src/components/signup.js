@@ -26,7 +26,7 @@ const Signup = () => {
 
     const register = (e) =>{
         e.preventDefault();
-        axios.post("http://localhost:3000/register",{
+        axios.post("http://localhost:8081/register",{
             email: email,
             username: username, 
             password: password,
