@@ -1,95 +1,109 @@
-
 .container {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    margin-top: 40px;
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 10px; 
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
-    max-width: 500px; 
-  }
-  
-  
-  .header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-  }
-  
-  
-  .text {
-    color: #3c009d;
-    font-size: 36px;
-    font-weight: 700;
-  }
-  
-  
-  .underline {
-    width: 61px;
-    height: 6px;
-    background: #3c009d;
-    border-radius: 9px;
-  }
-  
-  
-  .inputs {
-    margin-top: 40px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-
-  .input {
-    display: flex;
-    align-items: center;
-    margin: auto;
-    width: 100%;
-    max-width: 480px; 
-    height: 60px;
-    background: #f0f0f0;
-    border-radius: 6px;
-    padding: 0 10px; 
-  }
-  
-  
-  .input input {
-    flex: 1;
-    height: 40px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #333;
-    font-size: 18px;
-    padding-left: 10px; 
-  }
-  
-
-.submit-container {
-    display: flex;
-    align-items: center;
-    gap: 10px; 
-    margin-top: 20px; 
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  margin-top: 40px;
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 10px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  max-width: 500px; 
 }
 
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.text {
+  color: #3c009d;
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.underline {
+  width: 61px;
+  height: 6px;
+  background: #3c009d;
+  border-radius: 9px;
+}
+
+.inputs {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  margin: auto;
+  width: 100%;
+  max-width: 480px; 
+  height: 60px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  padding: 0 10px; 
+  position: relative; /* Ensure error message is placed correctly */
+}
+
+/* Error state styles */
+.input.error input {
+  border: 1px solid #e74c3c; /* Red border for inputs with errors */
+  background-color: #ffe6e6; /* Slight red background for error inputs */
+}
+
+.input.error .error-message {
+  display: block; /* Display the error message */
+}
+
+.input input {
+  flex: 1;
+  height: 40px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #333;
+  font-size: 18px;
+  padding-left: 10px; 
+}
+
+/* Error message styling */
+.error-message {
+  color: #e74c3c; /* Red color for error text */
+  font-size: 14px;
+  margin-top: 5px;
+  text-align: left;
+  position: absolute; /* Positioned beneath input */
+  bottom: -20px; /* Adjust to appear just below input */
+  left: 10px; /* Align with input padding */
+  display: none; /* Hidden by default */
+}
+
+.submit-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; 
+  margin-top: 20px; 
+}
 
 .submit {
-    background-color: #3c009d; 
-    color: white; 
-    font-size: 18px;
-    padding: 12px 24px; 
-    border-radius: 6px; 
-    width: 100%; 
-    max-width: 480px; 
-    transition: background-color 0.3s ease;
+  background-color: #3c009d; 
+  color: white; 
+  font-size: 18px;
+  padding: 12px 24px; 
+  border-radius: 6px; 
+  width: 100%; 
+  max-width: 480px; 
+  transition: background-color 0.3s ease;
 }
 
 .submit:hover {
-    background-color: #32007f; 
+  background-color: #32007f; 
 }
 
 .existingStudent {
@@ -114,13 +128,12 @@
   transition: background-color 0.3s ease;
 }
 
-.existingStudent:hover{
+.existingStudent:hover {
   color: #170136; 
 }
 
-
 .existingManager:hover {
-    color: #25005a; 
+  color: #25005a; 
 }
 
 .inputs .radio-label {
@@ -149,5 +162,3 @@
 .inputs .radio-group .Mui-checked {
   color: #3c009d;          
 }
-
-
