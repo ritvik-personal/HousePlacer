@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import './signup.css'
+import './managerportal.css'
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
 import HttpsIcon from '@mui/icons-material/Https';
@@ -13,73 +13,62 @@ import FormLabel from '@mui/material/FormLabel';
 import { useNavigate } from 'react-router-dom';
 
 
-const Signup = () => {
+function Managerportal(){
 
-
-    const navigate = useNavigate();
-
-    const[email, setEmail] = React.useState('');
     const[username, setUsername] = React.useState('');
     const[password, setPassword] = React.useState('');
-    const[classification, setClassification] = React.useState('');
-    const[registerStatus, setRegisterStatus] = React.useState('');
+    const[signStatus, setSignStatus] = React.useState('');
+
+    const classification = 1;
+    const navigate = useNavigate();
 
     const handleSubmit = (e) =>{
         e.preventDefault();
     };
 
-    const register = (e) =>{
+    const login = (e) =>{
         e.preventDefault();
-        axios.post("http://localhost:8081/register",{
+        axios.post("http://localhost:8081/login",{
             classification: classification,
-            email: email,
             username: username, 
             password: password,
         }).then((response) => {
-            if(response.data.message){
-                setRegisterStatus(response.data.message);
+            if(response.data.message == "Success"){
+                setSignStatus(response.data.message);
+                navigate("/managerdashboard");
             }
             else{
-                setRegisterStatus("Account created successfully");
+                setSignStatus("No record");
             }
         })
     }
-
     return(
         <div className="container">
             <div className="header">
-            <div className="text">Sign up</div>
+            <div className="text">Manager Sign-in Portal</div>
             <div className="underline"></div>
             </div>
             <div className="inputs">
             
-            
-            <FormLabel id="demo-row-radio-buttons-group-label" className="radio-label"> I am signing up as a:</FormLabel>
-            <RadioGroup row aria-labelledby="demo-row-radio-buttons-group-label" name="row-radio-buttons-group"className="radio-group" onChange={(e) => setClassification(e.target.value)}>
-                <FormControlLabel value="Student" control={<Radio />} label="Student" />
-                <FormControlLabel value="Manager" control={<Radio />} label="Manager" />
-            </RadioGroup>
            
-
-            <div className="input">
-                <EmailIcon></EmailIcon>
-                <input type="email" placeholder='Email'  onSubmit={(e) => handleSubmit(e)} onChange={(e) => setEmail(e.target.value)}/>
-            </div>
             <div className="input">
                 <PersonIcon></PersonIcon>
                 <input type="text" placeholder='Username'  onSubmit={(e) => handleSubmit(e)} onChange={(e) => setUsername(e.target.value)}/>
             </div>
+
             <div className="input">
                 <HttpsIcon></HttpsIcon>
                 <input type="password" placeholder='Password'  onSubmit={(e) => handleSubmit(e)} onChange={(e) => setPassword(e.target.value)}/>
             </div>
             </div>
             <div className="submit-container">
-            <div className="submit" onClick={(e) => register(e)}>Create Account</div>
-            <div className="existingStudent" onClick={() => navigate("./studentportal")}>Already a student</div>
-            <div className="existingManager" onClick={() => navigate("./managerportal")}>Already a manager</div>
+            <div className="submit" onClick={(e) => login(e)}>Log in</div>
+            <div className="toRegister" onClick={() => navigate("/")}>Sign Up</div>
+            <div className="toStudent" onClick={() => navigate("/studentportal")}>Student</div>
             </div>
         </div>
     )
 }
-export default Signup;
+
+
+export default Managerportal

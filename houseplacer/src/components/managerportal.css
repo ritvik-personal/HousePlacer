@@ -92,7 +92,7 @@
     background-color: #32007f; 
 }
 
-.existingStudent {
+.toStudent {
   background-color: #ce0512; 
   color: white; 
   font-size: 18px;
@@ -103,7 +103,7 @@
   transition: background-color 0.3s ease;
 }
 
-.existingManager {
+.toRegister {
   background-color: #001dc1; 
   color: white; 
   font-size: 18px;
@@ -114,40 +114,11 @@
   transition: background-color 0.3s ease;
 }
 
-.existingStudent:hover{
+.toStudent:hover{
   color: #170136; 
 }
 
 
-.existingManager:hover {
+.toRegister:hover {
     color: #25005a; 
 }
-
-.inputs .radio-label {
-  color: #3c009d;
-  font-size: 19px;        
-  margin-bottom: 10px;   
-  text-align: center;     
-}
-
-.inputs .radio-group {
-  display: flex;
-  justify-content: center; 
-  margin-bottom: 20px;     
-}
-
-.inputs .radio-group .MuiFormControlLabel-root {
-  margin-right: 20px;     
-  color: #797979;          
-  font-size: 16px;         
-}
-
-.inputs .radio-group .MuiRadio-root {
-  color: #3c009d;         
-}
-
-.inputs .radio-group .Mui-checked {
-  color: #3c009d;          
-}
-
-
