@@ -1,7 +1,9 @@
 import './App.css';
 import Signup from './components/signup'; 
 import StudentPortal from './components/studentportal'; 
-import ManagerPortal from './components/managerportal'; 
+import ManagerPortal from './components/managerportal';
+import StudentDashboard from './components/studentdashboard'; 
+import ManagerDashboard from './components/managerdashboard';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 
@@ -32,6 +34,8 @@ function App() {
           <Route path="/" element={<Signup />} />
           <Route path="/studentportal" element={<StudentPortal />} />
           <Route path="/managerportal" element={<ManagerPortal />} />
+          <Route path="/studentdashboard" element={<StudentDashboard />} />
+          <Route path="/managerdashboard" element={<ManagerDashboard />} /> 
         </Routes>
     </div>
     </Router>
