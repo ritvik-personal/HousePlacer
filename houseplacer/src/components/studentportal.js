@@ -37,7 +37,7 @@ function Studentportal(){
         }).then((response) => {
             if(response.data.message == "Success"){
                 setSignStatus(response.data.message);
-                navigate("/studentdashboard");
+                navigate("/studentportal/studentdashboard");
             }
             else{
                 setSignStatus("Signed in successfully");
