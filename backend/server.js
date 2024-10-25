@@ -32,11 +32,16 @@ db.connect((err) => {
 });
 
 app.post('/register', (req, res) => {
-    const { email, username, password } = req.body;
+    const { classification, email, username, password } = req.body;
     const id = generateRandomID(); 
 
-    
-    const query = "INSERT INTO users (ID, email, username, password) VALUES (?, ?, ?, ?)";
+    let query;
+    if(classification == 'Student'){
+        query = "INSERT INTO Students (ID, email, username, password) VALUES (?, ?, ?, ?)";
+    }
+    else{
+        query = "INSERT INTO Managers (ID, email, username, password) VALUES (?, ?, ?, ?)"; 
+    }
     db.query(query, [id, email, username, password], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
@@ -47,10 +52,18 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+    const classification = req.body.classification;
     const username = req.body.username;
     const password = req.body.password;
+
+    let query;
+    if(classification == 0){
+        query = "SELECT * FROM Students WHERE username = ? AND password = ?"; 
+    }
+    else{
+        query = "SELECT * FROM Managers WHERE username = ? AND password = ?"; 
+    }
     
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
     db.query(query, [username, password], (err, result) => {
         if (err) {
             console.error('Error querying data:', err);
@@ -58,8 +71,9 @@ app.post('/login', (req, res) => {
         }
         
         if (result.length > 0) {
-            res.send(result);
-        } else {
+            res.send({message: "Success"});
+        } 
+        else {
             res.send({ message: "Wrong username or password" });
         }
     });
