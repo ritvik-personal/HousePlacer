@@ -3,6 +3,9 @@ import Signup from './components/signup';
 import StudentPortal from './components/studentportal'; 
 import ManagerPortal from './components/managerportal'; 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import StudentDashboard from './components/studentdashboard';
+import ManagerDashboard from './components/managerdashboard';
+import PropertyForm from './components/createproperty';
 
 
 
@@ -32,6 +35,9 @@ function App() {
           <Route path="/" element={<Signup />} />
           <Route path="/studentportal" element={<StudentPortal />} />
           <Route path="/managerportal" element={<ManagerPortal />} />
+          <Route path="/studentportal/studentdashboard" element={<StudentDashboard />} />
+          <Route path="/managerportal/managerdashboard" element={<ManagerDashboard />} />
+          <Route path="/managerportal/managerdashboard/createproperty" element={<PropertyForm />} />
         </Routes>
     </div>
     </Router>

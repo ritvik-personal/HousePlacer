@@ -35,7 +35,7 @@ function Managerportal(){
         }).then((response) => {
             if(response.data.message == "Success"){
                 setSignStatus(response.data.message);
-                navigate("/managerdashboard");
+                navigate("/managerportal/managerdashboard");
             }
             else{
                 setSignStatus("No record");
