@@ -1,9 +1,10 @@
 import React, {useState} from 'react'
+import PropertyForm from './createproperty';
 
 function Managerdashboard(){
     return(
         <div>
-            <h1>Manager Dashboard</h1>
+            <PropertyForm></PropertyForm>
         </div>
     )
 }

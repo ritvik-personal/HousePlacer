@@ -136,7 +136,7 @@ const Signup = () => {
           </div>
       
           <div className="submit-container">
-            <div className="submit" onClick={(e) => register(e)}>Create Account</div>
+            <div className="register" onClick={(e) => register(e)}>Create an Account</div>
             <div className="existingStudent" onClick={() => navigate("./studentportal")}>Already a student</div>
             <div className="existingManager" onClick={() => navigate("./managerportal")}>Already a manager</div>
           </div>

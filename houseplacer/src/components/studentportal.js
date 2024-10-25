@@ -64,8 +64,8 @@ function Studentportal(){
             </div>
             </div>
             <div className="submit-container">
-            <div className="submit" onClick={(e) => login(e)}>Log in</div>
-            <div className="toRegister" onClick={() => navigate("/")}>Sign Up</div>
+            <div className="toLogin" onClick={(e) => login(e)}>Login</div>
+            <div className="toRegister" onClick={() => navigate("/")}>Signup</div>
             <div className="toManager" onClick={() => navigate("/managerportal")}>Manager</div>
             </div>
         </div>

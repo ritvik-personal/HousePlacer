@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 
 export default function PropertyForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ export default function PropertyForm() {
     propertyDescription: '',
     image: null,
   });
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +43,21 @@ export default function PropertyForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form Submitted', formData);
+    axios.post("http://localhost:8081/newproperty",{
+      property_name: formData.name,
+      no_bedrooms: formData.bedrooms,
+      address: formData.address,
+      no_bathrooms: formData.bathrooms,
+      sq_footage: formData.squareFootage,
+      dist_campus: formData.distanceToCampus,
+      parking: formData.parkingAvailable,
+      property_description: formData.propertyDescription,
+      rent: formData.rent
+    }).then((response) => {
+      if(response.data.message){
+        console.log("Property added successfully.");
+      }
+    })
   };
 
   return (
