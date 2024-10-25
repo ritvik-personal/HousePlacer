@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-
+import StudentPreferenceForm from './studentpreferences';
 
 function Studentdashboard(){
     return(
         <div>
-            <h1>Student Dashboard</h1>
+            <StudentPreferenceForm></StudentPreferenceForm>
         </div>
     )
 }

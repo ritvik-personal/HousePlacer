@@ -3,6 +3,20 @@ const mysql = require('mysql');
 const cors = require('cors');
 
 
+const bcrypt = require('bcrypt');
+
+async function hashPassword(password) {
+    const saltRounds = 12; 
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hash = await bcrypt.hash(password, salt);
+    return hash;
+}
+
+async function checkPassword(password, hash){
+    const isMatch = await bcrypt.compare(password, hash);
+    return isMatch;
+}
+
 
 const app = express();
 app.use(cors());
@@ -31,9 +45,10 @@ db.connect((err) => {
     console.log('Connected to the MySQL database.');
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     const { classification, email, username, password } = req.body;
     const id = generateRandomID(); 
+    const hashedPassword = await hashPassword(password);
 
     let query;
     if(classification == 'Student'){
@@ -42,7 +57,7 @@ app.post('/register', (req, res) => {
     else{
         query = "INSERT INTO Managers (ID, email, username, password) VALUES (?, ?, ?, ?)"; 
     }
-    db.query(query, [id, email, username, password], (err, result) => {
+    db.query(query, [id, email, username, hashedPassword], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).send({ message: "Error inserting data." });
@@ -51,20 +66,22 @@ app.post('/register', (req, res) => {
     });
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const classification = req.body.classification;
     const username = req.body.username;
     const password = req.body.password;
+    const hashedPassword = await hashPassword(password);
 
-    let query;
+    if(checkPassword(password, hashedPassword)){
+        let query;
     if(classification == 0){
-        query = "SELECT * FROM Students WHERE username = ? AND password = ?"; 
+        query = "SELECT * FROM Students WHERE username = ?"; 
     }
     else{
-        query = "SELECT * FROM Managers WHERE username = ? AND password = ?"; 
+        query = "SELECT * FROM Managers WHERE username = ?"; 
     }
     
-    db.query(query, [username, password], (err, result) => {
+    db.query(query, [username], (err, result) => {
         if (err) {
             console.error('Error querying data:', err);
             return res.status(500).send({ message: "Error querying data." });
@@ -77,6 +94,11 @@ app.post('/login', (req, res) => {
             res.send({ message: "Wrong username or password" });
         }
     });
+    }
+    else{
+        res.send({message: "Wrong password"});
+    }
+    
 });
 
 app.post('/getUserID', (req, res) =>{
@@ -108,12 +130,12 @@ app.post('/getUserID', (req, res) =>{
 
 app.post('/newproperty', (req, res) => {
 
-    const {property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent} = req.body;
+    const {property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website} = req.body;
     const id = generateRandomID(); 
 
-    query = "INSERT INTO Property (ID, 	Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+    query = "INSERT INTO Property (ID, 	Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent, Website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
-    db.query(query, [id, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent], (err, result) => {
+    db.query(query, [id, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).send({ message: "Error inserting data." });

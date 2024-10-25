@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import {
+  TextField,
+  Button,
+  Container,
+  Typography,
+  Grid,
+  Box,
+  Checkbox,
+  FormControlLabel,
+} from '@mui/material';
 
-export default function PropertyForm() {
+const PropertyForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -13,10 +23,12 @@ export default function PropertyForm() {
     distanceToCampus: '',
     parkingAvailable: false,
     propertyDescription: '',
+    website: '', // New field for website
     image: null,
   });
 
-
+  const [errors, setErrors] = useState({});
+  const [fileName, setFileName] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,6 +36,13 @@ export default function PropertyForm() {
       ...formData,
       [name]: value,
     });
+
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: '',
+      });
+    }
   };
 
   const handleCheckboxChange = (e) => {
@@ -34,205 +53,299 @@ export default function PropertyForm() {
   };
 
   const handleImageChange = (e) => {
+    const file = e.target.files[0];
     setFormData({
       ...formData,
-      image: e.target.files[0],
+      image: file,
     });
+    setFileName(file ? file.name : '');
+
+    if (errors.image) {
+      setErrors({
+        ...errors,
+        image: '',
+      });
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData({
+      ...formData,
+      image: null,
+    });
+    setFileName('');
+  };
+
+  const validateForm = () => {
+    let formErrors = {};
+
+    if (!formData.name.trim()) formErrors.name = 'Property Name is required';
+    if (!formData.address.trim()) formErrors.address = 'Address is required';
+    if (!formData.bedrooms || isNaN(formData.bedrooms))
+      formErrors.bedrooms = 'Number of bedrooms is required';
+    if (!formData.rent || isNaN(formData.rent))
+      formErrors.rent = 'Rent is required';
+    if (!formData.bathrooms || isNaN(formData.bathrooms))
+      formErrors.bathrooms = 'Number of bathrooms is required';
+    if (!formData.squareFootage || isNaN(formData.squareFootage))
+      formErrors.squareFootage = 'Square footage is required';
+    if (!formData.distanceToCampus || isNaN(formData.distanceToCampus))
+      formErrors.distanceToCampus = 'Distance to campus is required';
+    if (!formData.website.trim()) formErrors.website = 'Website is required'; // Validate website
+    if (!formData.image) formErrors.image = 'Image is required';
+
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Submitted', formData);
-    axios.post("http://localhost:8081/newproperty",{
-      property_name: formData.name,
-      no_bedrooms: formData.bedrooms,
-      address: formData.address,
-      no_bathrooms: formData.bathrooms,
-      sq_footage: formData.squareFootage,
-      dist_campus: formData.distanceToCampus,
-      parking: formData.parkingAvailable,
-      property_description: formData.propertyDescription,
-      rent: formData.rent
-    }).then((response) => {
-      if(response.data.message){
-        console.log("Property added successfully.");
-      }
-    })
+    if (validateForm()) {
+      console.log('Form Submitted', formData);
+      axios.post("http://localhost:8081/newproperty",{
+        property_name: formData.name,
+        no_bedrooms: formData.bedrooms,
+        address: formData.address,
+        no_bathrooms: formData.bathrooms,
+        sq_footage: formData.squareFootage,
+        dist_campus: formData.distanceToCampus,
+        parking: formData.parkingAvailable,
+        property_description: formData.propertyDescription,
+        rent: formData.rent,
+        website: formData.website,
+      }).then((response) => {
+        if(response.data.message){
+          console.log("Property added successfully.");
+        }
+      })
+    }
   };
 
   return (
-    <div className="container-fluid mt-5">
-      <h2 className="mb-4 text-center">Add a Property</h2>
-      <form
-        onSubmit={handleSubmit}
-        className="mx-auto"
-        style={{ maxWidth: '900px' }}
+    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+      <Box
+        sx={{
+          boxShadow: 3,
+          p: 5,
+          borderRadius: 2,
+          backgroundColor: 'white',
+          border: '1px solid #ddd',
+        }}
       >
-        {/* Property Name */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Property Name</label>
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Property Name"
-            />
-          </div>
-        </div>
+        <Typography
+          variant="h3"
+          align="center"
+          gutterBottom
+          sx={{ fontFamily: "'Roboto Slab', serif" }}
+        >
+          Add a Property
+        </Typography>
 
-        {/* Number of Bedrooms */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Number of Bedrooms</label>
-          <div className="col-md-9">
-            <input
-              type="number"
-              className="form-control"
-              name="bedrooms"
-              value={formData.bedrooms}
-              onChange={handleChange}
-              placeholder="Number of Bedrooms"
-            />
-          </div>
-        </div>
-
-        {/* Address */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Address</label>
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="1234 Main St"
-            />
-          </div>
-        </div>
-
-        {/* Rent */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Rent</label>
-          <div className="col-md-9">
-            <input
-              type="number"
-              className="form-control"
-              name="rent"
-              value={formData.rent}
-              onChange={handleChange}
-              placeholder="Rent"
-            />
-          </div>
-        </div>
-
-        {/* Bathrooms */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Bathrooms</label>
-          <div className="col-md-9">
-            <input
-              type="number"
-              className="form-control"
-              name="bathrooms"
-              value={formData.bathrooms}
-              onChange={handleChange}
-              placeholder="Number of Bathrooms"
-            />
-          </div>
-        </div>
-
-        {/* Square Footage */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Square Footage</label>
-          <div className="col-md-9">
-            <input
-              type="number"
-              className="form-control"
-              name="squareFootage"
-              value={formData.squareFootage}
-              onChange={handleChange}
-              placeholder="Square Footage"
-            />
-          </div>
-        </div>
-
-        {/* Distance to Campus */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">
-            Distance to Campus (in minutes)
-          </label>
-          <div className="col-md-9">
-            <input
-              type="number"
-              className="form-control"
-              name="distanceToCampus"
-              value={formData.distanceToCampus}
-              onChange={handleChange}
-              placeholder="Distance to Campus"
-            />
-          </div>
-        </div>
-
-        {/* Parking Availability */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">Parking Available</label>
-          <div className="col-md-9">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="parkingAvailable"
-                checked={formData.parkingAvailable}
-                onChange={handleCheckboxChange}
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={2}>
+            {/* Property Name */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="name"
+                label="Property Name"
+                placeholder="Enter property name"
+                variant="outlined"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
               />
-              <label className="form-check-label">Yes</label>
-            </div>
-          </div>
-        </div>
+            </Grid>
 
-        {/* Property Description */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">
-            Property Description
-          </label>
-          <div className="col-md-9">
-            <textarea
-              className="form-control"
-              name="propertyDescription"
-              rows="3"
-              value={formData.propertyDescription}
-              onChange={handleChange}
-              placeholder="Property Description"
-            ></textarea>
-          </div>
-        </div>
+            {/* Address */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="address"
+                label="Address"
+                placeholder="Enter property address"
+                variant="outlined"
+                value={formData.address}
+                onChange={handleChange}
+                error={!!errors.address}
+                helperText={errors.address}
+              />
+            </Grid>
 
-        {/* Image Upload */}
-        <div className="row mb-3">
-          <label className="col-md-3 col-form-label">
-            Upload Property Image
-          </label>
-          <div className="col-md-9">
-            <input
-              type="file"
-              className="form-control-file"
-              name="image"
-              onChange={handleImageChange}
-            />
-          </div>
-        </div>
+            {/* Bedrooms */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="bedrooms"
+                label="Bedrooms"
+                placeholder="Enter number of bedrooms"
+                type="number"
+                variant="outlined"
+                value={formData.bedrooms}
+                onChange={handleChange}
+                error={!!errors.bedrooms}
+                helperText={errors.bedrooms}
+              />
+            </Grid>
 
-        {/* Submit Button */}
-        <div className="row">
-          <div className="col-md-9 offset-md-3 mb-3">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
+            {/* Rent */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="rent"
+                label="Rent"
+                placeholder="Enter rent"
+                type="number"
+                variant="outlined"
+                value={formData.rent}
+                onChange={handleChange}
+                error={!!errors.rent}
+                helperText={errors.rent}
+              />
+            </Grid>
+
+            {/* Bathrooms */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="bathrooms"
+                label="Bathrooms"
+                placeholder="Enter number of bathrooms"
+                type="number"
+                variant="outlined"
+                value={formData.bathrooms}
+                onChange={handleChange}
+                error={!!errors.bathrooms}
+                helperText={errors.bathrooms}
+              />
+            </Grid>
+
+            {/* Square Footage */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="squareFootage"
+                label="Square Footage"
+                placeholder="Enter square footage"
+                type="number"
+                variant="outlined"
+                value={formData.squareFootage}
+                onChange={handleChange}
+                error={!!errors.squareFootage}
+                helperText={errors.squareFootage}
+              />
+            </Grid>
+
+            {/* Distance to Campus */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="distanceToCampus"
+                label="Distance to Campus"
+                placeholder="Enter distance to campus"
+                type="number"
+                variant="outlined"
+                value={formData.distanceToCampus}
+                onChange={handleChange}
+                error={!!errors.distanceToCampus}
+                helperText={errors.distanceToCampus}
+              />
+            </Grid>
+
+            {/* Website */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                name="website"
+                label="Website"
+                placeholder="Enter property website URL"
+                variant="outlined"
+                value={formData.website}
+                onChange={handleChange}
+                error={!!errors.website}
+                helperText={errors.website}
+              />
+            </Grid>
+
+            {/* Parking Availability */}
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.parkingAvailable}
+                    onChange={handleCheckboxChange}
+                    name="parkingAvailable"
+                  />
+                }
+                label="Parking Available"
+              />
+            </Grid>
+
+            {/* Property Description */}
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                name="propertyDescription"
+                label="Property Description"
+                placeholder="Enter property description"
+                multiline
+                rows={4}
+                variant="outlined"
+                value={formData.propertyDescription}
+                onChange={handleChange}
+              />
+            </Grid>
+
+            {/* Image Upload */}
+            <Grid item xs={12}>
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="upload-image"
+                type="file"
+                onChange={handleImageChange}
+              />
+              <label htmlFor="upload-image">
+                <Button variant="contained" component="span">
+                  Upload Image
+                </Button>
+              </label>
+              {fileName && (
+                <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body1" sx={{ mr: 2 }}>
+                    {fileName}
+                  </Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={handleRemoveImage}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              )}
+              {errors.image && (
+                <Typography color="error">{errors.image}</Typography>
+              )}
+            </Grid>
+
+            {/* Submit Button */}
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+                className="btn btn-primary btn-lg"
+              >
+                Submit
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </Box>
+    </Container>
   );
-}
+};
+
+export default PropertyForm;
