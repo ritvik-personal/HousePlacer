@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './studentdashboard.css';
+import { useNavigate } from 'react-router-dom';
 
 const ManagerDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
