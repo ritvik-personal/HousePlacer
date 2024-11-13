@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   TextField,
@@ -115,10 +116,34 @@ const StudentPreferenceForm = () => {
     return Object.keys(formErrors).length === 0;
   };
 
+  
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       console.log('Form Submitted', formData);
+      axios.post("http://localhost:8081/newpreference",{
+        no_bedrooms: formData.bedrooms,
+        no_bedrooms_priority : formData.priorityRankings.bedrooms,
+        no_bathrooms: formData.bathrooms,
+        no_bathrooms_priority: formData.priorityRankings.bathrooms, 
+        sq_footage: formData.squareFootage,
+        sq_footage_priority: formData.priorityRankings.squareFootage, 
+        budget: formData.rent,
+        budget_priority: formData.priorityRankings.rent,
+        dist_gym: formData.distanceToGym,
+        dist_gym_priority: formData.priorityRankings.distanceToGym,
+        dist_dining: formData.distanceToDining,
+        dist_dining_priority: formData.priorityRankings.distanceToDining,
+        dist_campus: formData.distanceToCampus,
+        dist_campus_priority: formData.priorityRankings.distanceToCampus,
+        parking: formData.parkingRequired,
+        notes: formData.additionalNotes,
+      }).then((response) => {
+        if(response.data.message){
+          console.log("Preferences logged successfully.");
+        }
+      })
     }
   };
 

@@ -176,6 +176,24 @@ app.post('/newproperty', (req, res) => {
 
 })
 
+app.post('/newpreference', (req, res) => {
+
+    const {no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes} = req.body;
+    const id = generateRandomID(); 
+
+    query = "INSERT INTO Property (ID, 	Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+
+    db.query(query, [id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes], (err, result) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).send({ message: "Error inserting data." });
+        }
+        res.status(201).send({ message: "Property added successfully", userId: id });
+    });
+
+})
+
+
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");
 });
