@@ -2,13 +2,11 @@ import './App.css';
 import Signup from './components/signup'; 
 import StudentPortal from './components/studentportal'; 
 import ManagerPortal from './components/managerportal';
-import StudentDashboard from './components/studentdashboard'; 
-import ManagerDashboard from './components/managerdashboard';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import StudentDashboard from './components/studentdashboard';
 import ManagerDashboard from './components/managerdashboard';
 import PropertyForm from './components/createproperty';
-
+import StudentPreferenceForm from "./components/studentpreferences";
 
 
 const Welcome = () =>{
@@ -40,6 +38,7 @@ function App() {
           <Route path="/studentportal/studentdashboard" element={<StudentDashboard />} />
           <Route path="/managerportal/managerdashboard" element={<ManagerDashboard />} />
           <Route path="/managerportal/managerdashboard/createproperty" element={<PropertyForm />} />
+          <Route path="/studentportal/studentdashboard/studentpreferences" element={<StudentPreferenceForm />} />
         </Routes>
     </div>
     </Router>

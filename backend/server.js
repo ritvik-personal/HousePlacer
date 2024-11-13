@@ -4,6 +4,10 @@ const cors = require('cors');
 
 
 const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
 
 async function hashPassword(password) {
     const saltRounds = 12; 
@@ -18,9 +22,26 @@ async function checkPassword(password, hash){
 }
 
 
+
+
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    methods:["GET", "POST"],
+    credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(session({
+    key:"id",
+    secret:"subscribe",
+    resave:false,
+    saveUninitialized: false,
+    cookie:{
+        expires: 60 * 60 * 24,
+    },
+}))
 
 app.get('/', (req, res) => {
     return res.json("From Backend Side");
@@ -66,6 +87,14 @@ app.post('/register', async (req, res) => {
     });
 });
 
+app.get('/login', (req, res) =>{
+    if(req.session.user){
+        res.send({loggedIn:true, user: req.session.user})
+    }
+    else{
+        res.send({loggedIn:false}) 
+    }
+})
 app.post('/login', async (req, res) => {
     const classification = req.body.classification;
     const username = req.body.username;
@@ -88,6 +117,8 @@ app.post('/login', async (req, res) => {
         }
         
         if (result.length > 0) {
+            req.session.user = result;
+            console.log(req.session.user)
             res.send({message: "Success"});
         } 
         else {

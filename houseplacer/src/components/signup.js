@@ -88,10 +88,10 @@ const Signup = () => {
             if(response.data.message){
                 setRegisterStatus(response.data.message);
                 if(classification !== "Student"){
-                    navigate("/managerdashboard");
+                    navigate("/managerportal/managerdashboard");
                 }
                 else{
-                    navigate("/studentdashboard");
+                    navigate("/studentportal/studentdashboard");
                 }
             }
             else{

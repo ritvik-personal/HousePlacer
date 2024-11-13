@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
+import StudentPreferenceForm from './studentpreferences';
 
 const StudentDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
@@ -17,7 +18,7 @@ const StudentDashboard = () => {
             case "Saved Properties":
                 return 
             case "Tasks":
-                return 
+                return <StudentPreferenceForm></StudentPreferenceForm>
         }
     };
 
@@ -29,8 +30,7 @@ const StudentDashboard = () => {
             <button onClick={() => setActiveTab("Tasks") }>Tasks</button>
             <button on onClick={logout}>Logout</button>
             </div>
-            <div className='dynamicContent'>
-                <h1>{activeTab}</h1>
+            <div className='dynamicContent preferenceform'>
                 {Sidebar()}
             </div>
         </div>

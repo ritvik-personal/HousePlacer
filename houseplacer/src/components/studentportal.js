@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import './studentportal.css'
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
@@ -20,12 +20,16 @@ function Studentportal(){
     const[password, setPassword] = React.useState('');
     const[signStatus, setSignStatus] = React.useState('');
 
+    axios.defaults.withCredentials = true;
+
     const navigate = useNavigate();
     const classification = 0;
 
     const handleSubmit = (e) =>{
         e.preventDefault();
     };
+
+
 
 
     const login = (e) =>{
@@ -44,6 +48,15 @@ function Studentportal(){
             }
         })
     }
+
+    useEffect(() => {
+        axios.get("http://localhost:8081/login").then((response) => {
+            if(response.data.loggedIn==true){
+            console.log(response.data.user[0].username);
+            }
+        });
+    }, []);
+    
     return(
         <div className="container">
             <div className="header">

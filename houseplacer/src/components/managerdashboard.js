@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
+import PropertyForm from './createproperty';
 
 const ManagerDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
@@ -16,7 +17,7 @@ const ManagerDashboard = () => {
             case "My Properties":
                 return 
             case "Tasks":
-                return 
+                return <PropertyForm/>
         }
     };
 
@@ -29,7 +30,6 @@ const ManagerDashboard = () => {
             <button on onClick={logout}>Logout</button>
             </div>
             <div className='dynamicContent'>
-                <h1>{activeTab}</h1>
                 {Sidebar()}
             </div>
         </div>
