@@ -96,43 +96,42 @@ app.get('/login', (req, res) =>{
     }
 })
 app.post('/login', async (req, res) => {
-    const classification = req.body.classification;
-    const username = req.body.username;
-    const password = req.body.password;
-    const hashedPassword = await hashPassword(password);
+    const { classification, username, password } = req.body;
+    let query;
 
-    if(checkPassword(password, hashedPassword)){
-        let query;
-    if(classification == 0){
+    if (classification == 0) {
         query = "SELECT * FROM Students WHERE username = ?"; 
-    }
-    else{
+    } else {
         query = "SELECT * FROM Managers WHERE username = ?"; 
     }
-    
-    db.query(query, [username], (err, result) => {
+
+    db.query(query, [username], async (err, result) => {
         if (err) {
             console.error('Error querying data:', err);
             return res.status(500).send({ message: "Error querying data." });
         }
-        
+
         if (result.length > 0) {
-            req.session.user = result;
-            console.log(req.session.user)
-            res.send({message: "Success"});
-        } 
-        else {
-            res.send({ message: "Wrong username or password" });
+            const hashedPassword = await hashPassword(password);
+            const isMatch = await checkPassword(password, hashedPassword);
+
+            if (isMatch) {
+                req.session.user = {
+                    id: result[0].ID, 
+                    username: result[0].username,
+                };
+                return res.send({ message: "Success", userId: result[0].ID });
+            } else {
+                return res.send({ message: "Wrong password" });
+            }
+        } else {
+            return res.send({ message: "Wrong username or password" });
         }
     });
-    }
-    else{
-        res.send({message: "Wrong password"});
-    }
-    
 });
 
-app.post('/getUserID', (req, res) =>{
+
+app.post('/getStudentID', (req, res) =>{
     const {username, password, classification} = req.body;
 
     let query;
@@ -161,37 +160,50 @@ app.post('/getUserID', (req, res) =>{
 
 app.post('/newproperty', (req, res) => {
 
-    const {property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website} = req.body;
-    const id = generateRandomID(); 
+    const {managerId, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website} = req.body;
+    const propertyId = generateRandomID();
 
-    query = "INSERT INTO Property (ID, 	Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent, Website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+    query = "INSERT INTO Property (Property_ID, Manager_ID, Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent, Website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
-    db.query(query, [id, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website], (err, result) => {
+    db.query(query, [propertyId, managerId, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).send({ message: "Error inserting data." });
         }
-        res.status(201).send({ message: "Property added successfully", userId: id });
+        res.status(201).send({ message: "Property added successfully", managerId: managerId });
     });
 
 })
 
 app.post('/newpreference', (req, res) => {
 
-    const {no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes} = req.body;
-    const id = generateRandomID(); 
+    const {student_id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes} = req.body;
 
-    query = "INSERT INTO Property (ID, 	Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
+    query = "INSERT INTO Preferences (Student_ID, Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
 
-    db.query(query, [id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes], (err, result) => {
+    db.query(query, [student_id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).send({ message: "Error inserting data." });
         }
-        res.status(201).send({ message: "Property added successfully", userId: id });
+        res.status(201).send({ message: "Property added successfully", userId: student_id });
     });
 
 })
+
+
+app.get('/properties', (req, res) => {
+    const { managerId } = req.query;
+
+    const query = "SELECT * FROM Property WHERE Manager_ID = ?";
+    db.query(query, [managerId], (err, result) => {
+        if (err) {
+            console.error('Error retrieving properties:', err);
+            return res.status(500).send({ message: "Error retrieving properties." });
+        }
+        res.status(200).send(result);
+    });
+});
 
 
 app.listen(8081, () => {

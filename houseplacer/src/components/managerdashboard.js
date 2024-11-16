@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
 import PropertyForm from './createproperty';
+import PropertiesList from './propertieslist';
 
 const ManagerDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
     const navigate = useNavigate();
+    const managerId = sessionStorage.getItem('managerId');
 
     const logout = () => {
         navigate("/")
@@ -14,10 +16,14 @@ const ManagerDashboard = () => {
         switch(activeTab) {
             case "Marketplace":
                 return 
-            case "My Properties":
-                return 
+            case "Saved Properties":
+                console.log("Sure");
+                return <PropertiesList managerId={managerId}/>;
             case "Tasks":
-                return <PropertyForm/>
+                console.log("Excellent");
+                return <PropertyForm/>;
+            default:
+                return null;
         }
     };
 

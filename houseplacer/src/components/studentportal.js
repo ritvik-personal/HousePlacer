@@ -19,8 +19,8 @@ function Studentportal(){
     const[username, setUsername] = React.useState('');
     const[password, setPassword] = React.useState('');
     const[signStatus, setSignStatus] = React.useState('');
-
-    axios.defaults.withCredentials = true;
+    const[studentId, setStudentId] = React.useState(null);
+    
 
     const navigate = useNavigate();
     const classification = 0;
@@ -41,10 +41,12 @@ function Studentportal(){
         }).then((response) => {
             if(response.data.message == "Success"){
                 setSignStatus(response.data.message);
+                setStudentId(response.data.userId);
+                sessionStorage.setItem("studentId", response.data.userId);
                 navigate("/studentportal/studentdashboard");
             }
             else{
-                setSignStatus("Signed in successfully");
+                setSignStatus("No record.");
             }
         })
     }
@@ -53,6 +55,7 @@ function Studentportal(){
         axios.get("http://localhost:8081/login").then((response) => {
             if(response.data.loggedIn==true){
             console.log(response.data.user[0].username);
+            setStudentId(response.data.user[0].ID);
             }
         });
     }, []);

@@ -36,6 +36,9 @@ const StudentPreferenceForm = () => {
     additionalNotes: '',
   });
 
+  const studentId = sessionStorage.getItem("studentId");
+  
+
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -123,6 +126,7 @@ const StudentPreferenceForm = () => {
     if (validateForm()) {
       console.log('Form Submitted', formData);
       axios.post("http://localhost:8081/newpreference",{
+        student_id : studentId,
         no_bedrooms: formData.bedrooms,
         no_bedrooms_priority : formData.priorityRankings.bedrooms,
         no_bathrooms: formData.bathrooms,

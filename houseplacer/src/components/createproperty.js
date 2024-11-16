@@ -13,6 +13,9 @@ import {
 } from '@mui/material';
 
 const PropertyForm = () => {
+
+  const managerId = sessionStorage.getItem("managerId");
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -26,6 +29,8 @@ const PropertyForm = () => {
     website: '', // New field for website
     image: null,
   });
+
+
 
   const [errors, setErrors] = useState({});
   const [fileName, setFileName] = useState('');
@@ -103,6 +108,7 @@ const PropertyForm = () => {
     if (validateForm()) {
       console.log('Form Submitted', formData);
       axios.post("http://localhost:8081/newproperty",{
+        managerId: managerId,
         property_name: formData.name,
         no_bedrooms: formData.bedrooms,
         address: formData.address,

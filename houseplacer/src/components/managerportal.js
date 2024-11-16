@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import './managerportal.css'
 import EmailIcon from '@mui/icons-material/Email';
 import PersonIcon from '@mui/icons-material/Person';
@@ -18,6 +18,7 @@ function Managerportal(){
     const[username, setUsername] = React.useState('');
     const[password, setPassword] = React.useState('');
     const[signStatus, setSignStatus] = React.useState('');
+    const [managerId, setManagerId] = React.useState(null);
 
     const classification = 1;
     const navigate = useNavigate();
@@ -35,6 +36,8 @@ function Managerportal(){
         }).then((response) => {
             if(response.data.message == "Success"){
                 setSignStatus(response.data.message);
+                setManagerId(response.data.userId); 
+                sessionStorage.setItem("managerId", response.data.userId); 
                 navigate("/managerportal/managerdashboard");
             }
             else{
@@ -42,6 +45,17 @@ function Managerportal(){
             }
         })
     }
+
+
+    useEffect(() => {
+        axios.get("http://localhost:8081/login").then((response) => {
+            if(response.data.loggedIn==true){
+            console.log(response.data.user[0].username);
+            setManagerId(response.data.user[0].ID);
+            }
+        });
+    }, []);
+
     return(
         <div className="container">
             <div className="header">
