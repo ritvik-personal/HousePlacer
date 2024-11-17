@@ -1,7 +1,11 @@
+
+
 const express = require('express');
 const mysql = require('mysql');
 const cors = require('cors');
 
+const multer = require("multer");
+const path = require("path");
 
 const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
@@ -27,7 +31,7 @@ async function checkPassword(password, hash){
 const app = express();
 app.use(cors({
     origin: ["http://localhost:3000"],
-    methods:["GET", "POST"],
+    methods:["GET", "POST", "DELETE", "PUT", "OPTIONS"],
     credentials: true
 }));
 app.use(express.json());
@@ -43,6 +47,9 @@ app.use(session({
     },
 }))
 
+app.use('/imgs', express.static(path.join(__dirname, 'imgs')));
+
+
 app.get('/', (req, res) => {
     return res.json("From Backend Side");
 });
@@ -55,8 +62,14 @@ const db = mysql.createConnection({
 });
 
 const generateRandomID = () => {
-    return Math.floor(10000 + Math.random() * 90000); 
+    return Math.floor(10000 + Math.random() * 89999); 
 };
+
+const generateRandomIDclass = (c) => {
+    const firstDigit = c === "Student" ? 1 : 2; 
+    const randomDigits = Math.floor(Math.random() * 10000).toString().padStart(4, '0'); 
+    return parseInt(`${firstDigit}${randomDigits}`);
+  };
 
 db.connect((err) => {
     if (err) {
@@ -68,14 +81,16 @@ db.connect((err) => {
 
 app.post('/register', async (req, res) => {
     const { classification, email, username, password } = req.body;
-    const id = generateRandomID(); 
     const hashedPassword = await hashPassword(password);
-
+    
+    let id;
     let query;
     if(classification == 'Student'){
+        id = generateRandomIDclass('Student'); 
         query = "INSERT INTO Students (ID, email, username, password) VALUES (?, ?, ?, ?)";
     }
     else{
+        id = generateRandomIDclass('Manager'); 
         query = "INSERT INTO Managers (ID, email, username, password) VALUES (?, ?, ?, ?)"; 
     }
     db.query(query, [id, email, username, hashedPassword], (err, result) => {
@@ -158,22 +173,54 @@ app.post('/getStudentID', (req, res) =>{
 })
 
 
-app.post('/newproperty', (req, res) => {
-
-    const {managerId, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website} = req.body;
-    const propertyId = generateRandomID();
-
-    query = "INSERT INTO Property (Property_ID, Manager_ID, Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent, Website) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
-
-    db.query(query, [propertyId, managerId, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website], (err, result) => {
-        if (err) {
-            console.error('Error inserting data:', err);
-            return res.status(500).send({ message: "Error inserting data." });
-        }
-        res.status(201).send({ message: "Property added successfully", managerId: managerId });
-    });
+const storage = multer.diskStorage({
+    destination: (req, file, cb) =>{
+        cb(null, path.resolve(__dirname, 'imgs'))
+    },
+    filename:(req, file, cb)=>{
+        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
+    }
 
 })
+
+const upload = multer({storage: storage});
+
+app.post('/newproperty', upload.single('image'), (req, res) => {
+    const {
+      managerId,
+      property_name,
+      no_bedrooms,
+      address,
+      no_bathrooms,
+      sq_footage,
+      dist_campus,
+      parking,
+      property_description,
+      rent,
+      website,
+    } = req.body;
+  
+    const imageFilename = req.file ? req.file.filename : null;
+    const propertyId = generateRandomID();
+  
+    const query = `
+      INSERT INTO Property 
+      (Property_ID, Manager_ID, Property_Name, No_Bedrooms, Address, No_Bathrooms, Sq_Footage, Dist_Campus, Parking, Property_Description, Rent, Website, Image)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+  
+    db.query(
+      query,
+      [propertyId, managerId, property_name, no_bedrooms, address, no_bathrooms, sq_footage, dist_campus, parking, property_description, rent, website, imageFilename],
+      (err, result) => {
+        if (err) {
+          console.error("Error inserting data:", err);
+          return res.status(500).send({ message: "Error inserting data." });
+        }
+        res.status(201).send({ message: "Property added successfully", managerId: managerId });
+      }
+    );
+  });
 
 app.post('/newpreference', (req, res) => {
 
@@ -191,6 +238,21 @@ app.post('/newpreference', (req, res) => {
 
 })
 
+app.get('/getpreferences', (req, res) => {
+    const { studentId } = req.query;
+    const query = "SELECT * FROM Preferences WHERE Student_ID = ?";
+    db.query(query, [studentId], (err, result) => {
+      if (err) {
+        console.error('Error retrieving preferences:', err);
+        return res.status(500).send({ message: 'Error retrieving preferences.' });
+      }
+      if (result.length > 0) {
+        res.status(200).send(result[0]); 
+      } else {
+        res.status(404).send({ message: 'No preferences found.' });
+      }
+    });
+  });
 
 app.get('/properties', (req, res) => {
     const { managerId } = req.query;
@@ -205,6 +267,19 @@ app.get('/properties', (req, res) => {
     });
 });
 
+
+app.delete('/deleteproperty/:propertyId', (req, res) => {
+    const { propertyId } = req.params;
+    console.log('Received Property ID:', propertyId);
+    const query = 'DELETE FROM Property WHERE Property_ID = ?';
+    db.query(query, [propertyId], (err, result) => {
+      if (err) {
+        console.error('Error deleting property:', err);
+        return res.status(500).send({ message: 'Error deleting property.' });
+      }
+      res.status(200).send({ message: 'Property deleted successfully.' });
+    });
+  });
 
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");

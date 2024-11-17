@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
@@ -150,6 +150,49 @@ const StudentPreferenceForm = () => {
       })
     }
   };
+
+  useEffect(() => {
+    const fetchPreferences = async () => {
+      const studentId = sessionStorage.getItem("studentId");
+  
+      if (studentId) {
+        try {
+          const response = await axios.get(`http://localhost:8081/getpreferences?studentId=${studentId}`);
+          console.log(response);
+          if (response.status === 200) {
+            const fetchedData = response.data;
+          
+            setFormData({
+              bedrooms: String(fetchedData.bedrooms),
+              bathrooms: String(fetchedData.bathrooms || ''),
+              rent: String(fetchedData.rent || ''),
+              squareFootage: String(fetchedData.squareFootage || ''),
+              distanceToCampus: String(fetchedData.distanceToCampus || ''),
+              distanceToDining: String(fetchedData.distanceToDining || ''),
+              distanceToGym: String(fetchedData.distanceToGym || ''),
+              parkingRequired: String(fetchedData.parkingRequired ?? false), // Convert boolean to string
+              priorityRankings: {
+                bedrooms: String(fetchedData.priorityRankings?.bedrooms || ''),
+                bathrooms: String(fetchedData.priorityRankings?.bathrooms || ''),
+                rent: String(fetchedData.priorityRankings?.rent || ''),
+                squareFootage: String(fetchedData.priorityRankings?.squareFootage || ''),
+                distanceToCampus: String(fetchedData.priorityRankings?.distanceToCampus || ''),
+                distanceToDining: String(fetchedData.priorityRankings?.distanceToDining || ''),
+                distanceToGym: String(fetchedData.priorityRankings?.distanceToGym || ''),
+              },
+              additionalNotes: String(fetchedData.additionalNotes || ''),
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching preferences:', error);
+        }
+      }
+    };
+  
+    fetchPreferences();
+  }, []);
+  
+  
 
   return (
     <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>

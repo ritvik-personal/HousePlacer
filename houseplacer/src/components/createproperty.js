@@ -106,26 +106,38 @@ const PropertyForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Form Submitted', formData);
-      axios.post("http://localhost:8081/newproperty",{
-        managerId: managerId,
-        property_name: formData.name,
-        no_bedrooms: formData.bedrooms,
-        address: formData.address,
-        no_bathrooms: formData.bathrooms,
-        sq_footage: formData.squareFootage,
-        dist_campus: formData.distanceToCampus,
-        parking: formData.parkingAvailable,
-        property_description: formData.propertyDescription,
-        rent: formData.rent,
-        website: formData.website,
-      }).then((response) => {
-        if(response.data.message){
-          console.log("Property added successfully.");
-        }
-      })
+      const formDataToSend = new FormData();
+  
+      formDataToSend.append("managerId", managerId);
+      formDataToSend.append("property_name", formData.name);
+      formDataToSend.append("no_bedrooms", formData.bedrooms);
+      formDataToSend.append("address", formData.address);
+      formDataToSend.append("no_bathrooms", formData.bathrooms);
+      formDataToSend.append("sq_footage", formData.squareFootage);
+      formDataToSend.append("dist_campus", formData.distanceToCampus);
+      formDataToSend.append("parking", formData.parkingAvailable);
+      formDataToSend.append("property_description", formData.propertyDescription);
+      formDataToSend.append("rent", formData.rent);
+      formDataToSend.append("website", formData.website);
+  
+      if (formData.image) {
+        formDataToSend.append("image", formData.image);
+      }
+  
+      axios.post("http://localhost:8081/newproperty", formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+          if (response.data.message) {
+            console.log("Property added successfully.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error submitting form:", err);
+        });
     }
   };
+  
 
   return (
     <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
