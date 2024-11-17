@@ -254,6 +254,23 @@ app.get('/getpreferences', (req, res) => {
     });
   });
 
+  app.put('/updatepreferences/:studentId', (req, res) =>{
+    const { studentId } = req.params;
+    const {no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes} = req.body; 
+    const query = `
+    UPDATE Preferences
+    SET Bedrooms = ?, Bedrooms_P = ?, Bathrooms = ?, Bathrooms_P = ?, Rent = ?, Rent_P = ?, Sq_ft = ?, Sq_ft_P = ?, DistD = ?, DistD_P = ?, DistG = ?, DistG_P = ?, DistC = ?, DistC_P = ?, Parking = ?, Notes = ?
+    WHERE Student_ID = ?`;
+
+    db.query(query, [no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes, studentId], (err, result) => {
+        if (err) {
+            console.error('Error updating data:', err);
+            return res.status(500).send({ message: "Error updating data." });
+        }
+        res.status(201).send({ message: "Preferences updates successfully"});
+    });
+})
+
 app.get('/properties', (req, res) => {
     const { managerId } = req.query;
 
