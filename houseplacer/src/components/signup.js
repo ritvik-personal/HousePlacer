@@ -88,14 +88,16 @@ const Signup = () => {
             if(response.data.message){
                 setRegisterStatus(response.data.message);
                 if(classification !== "Student"){
+                    sessionStorage.setItem("managerId", response.data.userId);
                     navigate("/managerportal/managerdashboard");
                 }
                 else{
+                    sessionStorage.setItem("studentId", response.data.userId);
                     navigate("/studentportal/studentdashboard");
                 }
             }
             else{
-                setRegisterStatus("Account created successfully");
+                setRegisterStatus("Account creation failed.");
             }
         })
     }

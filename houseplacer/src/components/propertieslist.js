@@ -79,7 +79,6 @@ console.log('Properties:', properties);
         {properties.map((property) => (
           <Grid2 item xs={12} sm={6} md={4} key={property.Property_ID}>
             <Card>
-              {/* Display property image */}
               <CardMedia
                 component="img"
                 height="200"

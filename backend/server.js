@@ -96,7 +96,7 @@ app.post('/register', async (req, res) => {
     db.query(query, [id, email, username, hashedPassword], (err, result) => {
         if (err) {
             console.error('Error inserting data:', err);
-            return res.status(500).send({ message: "Error inserting data." });
+            return res.status(500).send({ message: "Error inserting data."});
         }
         res.status(201).send({ message: "User registered successfully", userId: id });
     });

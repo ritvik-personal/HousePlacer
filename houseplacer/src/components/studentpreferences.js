@@ -163,24 +163,24 @@ const StudentPreferenceForm = () => {
             const fetchedData = response.data;
           
             setFormData({
-              bedrooms: String(fetchedData.bedrooms),
-              bathrooms: String(fetchedData.bathrooms || ''),
-              rent: String(fetchedData.rent || ''),
-              squareFootage: String(fetchedData.squareFootage || ''),
-              distanceToCampus: String(fetchedData.distanceToCampus || ''),
-              distanceToDining: String(fetchedData.distanceToDining || ''),
-              distanceToGym: String(fetchedData.distanceToGym || ''),
-              parkingRequired: String(fetchedData.parkingRequired ?? false), // Convert boolean to string
+              bedrooms: String(fetchedData.Bedrooms),
+              bathrooms: String(fetchedData.Bathrooms),
+              rent: String(fetchedData.Rent),
+              squareFootage: String(fetchedData.Sq_ft),
+              distanceToCampus: String(fetchedData.DistC),
+              distanceToDining: String(fetchedData.DistD),
+              distanceToGym: String(fetchedData.DistG),
+              parkingRequired: Boolean(fetchedData.Parking == 1),
               priorityRankings: {
-                bedrooms: String(fetchedData.priorityRankings?.bedrooms || ''),
-                bathrooms: String(fetchedData.priorityRankings?.bathrooms || ''),
-                rent: String(fetchedData.priorityRankings?.rent || ''),
-                squareFootage: String(fetchedData.priorityRankings?.squareFootage || ''),
-                distanceToCampus: String(fetchedData.priorityRankings?.distanceToCampus || ''),
-                distanceToDining: String(fetchedData.priorityRankings?.distanceToDining || ''),
-                distanceToGym: String(fetchedData.priorityRankings?.distanceToGym || ''),
+                bedrooms: String(fetchedData.Bedrooms_P),
+                bathrooms: String(fetchedData.Bathrooms_P),
+                rent: String(fetchedData.Rent_P),
+                squareFootage: String(fetchedData.Sq_ft_P),
+                distanceToCampus: String(fetchedData.DistC_P),
+                distanceToDining: String(fetchedData.DistD_P),
+                distanceToGym: String(fetchedData.DistG_P),
               },
-              additionalNotes: String(fetchedData.additionalNotes || ''),
+              additionalNotes: String(fetchedData.Notes),
             });
           }
         } catch (error) {
