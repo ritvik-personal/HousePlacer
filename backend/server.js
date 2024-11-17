@@ -281,6 +281,30 @@ app.delete('/deleteproperty/:propertyId', (req, res) => {
     });
   });
 
+app.put('/updateproperty/:propertyId', (req, res) => {
+    const { propertyId } = req.params;
+    const { Property_Name, Address, No_Bedrooms, No_Bathrooms, Rent } = req.body;
+  
+    const query = `UPDATE Property SET Property_Name = ?, Address = ?, No_Bedrooms = ?, No_Bathrooms = ?, Rent = ? WHERE Property_ID = ?`;
+    
+    db.query(query, [Property_Name, Address, No_Bedrooms, No_Bathrooms, Rent, propertyId], (err, result) => {
+        if (err) {
+          console.error('Error updating property:', err);
+          return res.status(500).send({ message: 'Error updating property' });
+        }
+        
+        if (result.affectedRows > 0) {
+          res.status(200).send({ message: 'Property updated successfully' });
+        } else {
+          res.status(404).send({ message: 'Property not found' });
+        }
+      }
+    );
+  });
+  
+
+
+
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");
 });
