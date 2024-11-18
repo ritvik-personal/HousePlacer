@@ -318,7 +318,8 @@ app.put('/updateproperty/:propertyId', (req, res) => {
       }
     );
   });
-  //matchingAlgorithm
+ 
+  
   const calculateMatchingScore = (studentPreferences, property) => {
     // Extract priorities from student preferences
     const {
@@ -401,47 +402,19 @@ app.put('/updateproperty/:propertyId', (req, res) => {
 
     return score;
 };
-  app.get('/matchproperties', (req, res) => {
-    const { studentId } = req.query;
 
-    // Step 1: Get the student's preferences
-    const studentQuery = "SELECT * FROM Preferences WHERE Student_ID = ?";
-    db.query(studentQuery, [studentId], (err, studentResult) => {
+app.get('/matchproperties', (req, res) => {
+    const propertyQuery = "SELECT * FROM Property";
+
+    db.query(propertyQuery, (err, propertyResults) => {
         if (err) {
-            console.error('Error retrieving student preferences:', err);
-            return res.status(500).send({ message: 'Error retrieving student preferences.' });
+            console.error('Error retrieving properties:', err);
+            return res.status(500).send({ message: 'Error retrieving properties.' });
         }
 
-        if (studentResult.length === 0) {
-            return res.status(404).send({ message: 'Student preferences not found.' });
-        }
-
-        const studentPreferences = studentResult[0];
-
-        // Step 2: Get all properties
-        const propertyQuery = "SELECT * FROM Property";
-        db.query(propertyQuery, (err, propertyResults) => {
-            if (err) {
-                console.error('Error retrieving properties:', err);
-                return res.status(500).send({ message: 'Error retrieving properties.' });
-            }
-
-            // Step 3: Calculate matching scores using dynamic weights
-            const scoredProperties = propertyResults.map((property) => {
-                const score = calculateMatchingScore(studentPreferences, property);
-                return { ...property, matchingScore: score };
-            });
-
-            // Step 4: Sort properties by score in descending order
-            scoredProperties.sort((a, b) => b.matchingScore - a.matchingScore);
-
-            // Step 5: Return top 20 properties
-            const topProperties = scoredProperties.slice(0, 20);
-            res.status(200).send(topProperties);
-        });
+        res.json(propertyResults);
     });
 });
-  
 
 
 

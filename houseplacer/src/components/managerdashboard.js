@@ -3,6 +3,7 @@ import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
 import PropertyForm from './createproperty';
 import PropertiesList from './propertieslist';
+import Marketplace from './marketplace';
 
 const ManagerDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
@@ -15,7 +16,7 @@ const ManagerDashboard = () => {
     const Sidebar = () => {
         switch(activeTab) {
             case "Marketplace":
-                return 
+                return <Marketplace/>;
             case "Saved Properties":
                 console.log("Sure");
                 return <PropertiesList managerId={managerId}/>;
