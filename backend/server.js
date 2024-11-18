@@ -318,7 +318,103 @@ app.put('/updateproperty/:propertyId', (req, res) => {
       }
     );
   });
+ 
   
+  const calculateMatchingScore = (studentPreferences, property) => {
+    // Extract priorities from student preferences
+    const {
+        Bedrooms_P,
+        Bathrooms_P,
+        Rent_P,
+        Sq_ft_P,
+        DistD_P,
+        DistG_P,
+        DistC_P,
+    } = studentPreferences;
+
+    // Normalize weights
+    const totalWeight =
+        Bedrooms_P +
+        Bathrooms_P +
+        Rent_P +
+        Sq_ft_P +
+        DistD_P +
+        DistG_P +
+        DistC_P;
+
+    const weights = {
+        bedrooms: Bedrooms_P / totalWeight,
+        bathrooms: Bathrooms_P / totalWeight,
+        rent: Rent_P / totalWeight,
+        squareFootage: Sq_ft_P / totalWeight,
+        distanceDining: DistD_P / totalWeight,
+        distanceGym: DistG_P / totalWeight,
+        distanceCampus: DistC_P / totalWeight,
+    };
+
+    let score = 0;
+
+    // Bedrooms Match
+    if (property.No_Bedrooms === studentPreferences.Bedrooms) {
+        score += weights.bedrooms;
+    } else if (Math.abs(property.No_Bedrooms - studentPreferences.Bedrooms) === 1) {
+        score += weights.bedrooms / 2; // Partial match
+    }
+
+    // Bathrooms Match
+    if (property.No_Bathrooms === studentPreferences.Bathrooms) {
+        score += weights.bathrooms;
+    } else if (Math.abs(property.No_Bathrooms - studentPreferences.Bathrooms) === 1) {
+        score += weights.bathrooms / 2; // Partial match
+    }
+
+    // Rent Match
+    if (property.Rent <= studentPreferences.Rent) {
+        score += weights.rent;
+    }
+
+    // Square Footage Match
+    if (property.Sq_Footage >= studentPreferences.Sq_ft) {
+        score += weights.squareFootage;
+    } else if (property.Sq_Footage >= studentPreferences.Sq_ft * 0.9) {
+        score += weights.squareFootage / 2; // Partial match for close sizes
+    }
+
+    // Distance to Dining Match
+    if (property.Dist_Dining <= studentPreferences.DistD) {
+        score += weights.distanceDining;
+    }
+
+    // Distance to Gym Match
+    if (property.Dist_Gym <= studentPreferences.DistG) {
+        score += weights.distanceGym;
+    }
+
+    // Distance to Campus Match
+    if (property.Dist_Campus <= studentPreferences.DistC) {
+        score += weights.distanceCampus;
+    }
+
+    // Parking Match
+    if (property.Parking === studentPreferences.Parking) {
+        score += 1; // Full score for parking match
+    }
+
+    return score;
+};
+
+app.get('/matchproperties', (req, res) => {
+    const propertyQuery = "SELECT * FROM Property";
+
+    db.query(propertyQuery, (err, propertyResults) => {
+        if (err) {
+            console.error('Error retrieving properties:', err);
+            return res.status(500).send({ message: 'Error retrieving properties.' });
+        }
+
+        res.json(propertyResults);
+    });
+});
 
 
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
 import StudentPreferenceForm from './studentpreferences';
+import Marketplace from './marketplace';
 
 const StudentDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
@@ -14,7 +15,7 @@ const StudentDashboard = () => {
     const Sidebar = () => {
         switch(activeTab) {
             case "Marketplace":
-                return 
+                return <Marketplace></Marketplace> 
             case "Saved Properties":
                 return 
             case "Tasks":
