@@ -1,6 +1,6 @@
 // Import necessary modules and components
 import { render, screen, fireEvent } from '@testing-library/react';
-import Signup from './Signup';
+import Signup from './signup';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import axios from 'axios';
