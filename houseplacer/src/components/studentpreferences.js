@@ -428,6 +428,8 @@ const StudentPreferenceForm = () => {
             <Button variant="contained" color="secondary" onClick={() => savePreferences()}>
               Save Preferences
             </Button>
+            </Grid2>
+            <Grid2>
               <Button variant="contained" color="primary" type="submit">
                 Submit Preferences
               </Button>

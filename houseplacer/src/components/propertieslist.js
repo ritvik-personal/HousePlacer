@@ -7,22 +7,19 @@ const PropertiesList = ({ managerId }) => {
   const [opened, setOpened] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
 
-  const handleDelete = async (propertyId) =>{
+  const handleDelete = async (propertyId) => {
     try {
       await axios.delete(`http://localhost:8081/deleteproperty/${propertyId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
       setProperties((prevProperties) =>
-        prevProperties.filter((property) => property.ID !== propertyId)
+        prevProperties.filter((property) => property.Property_ID !== propertyId)
       );
-      console.log(propertyId);
       console.log('Property deleted successfully');
     } catch (error) {
       console.error('Error deleting property:', error);
     }
-  }
+  };
 
   const handleDetails = (property) => {
     setSelectedProperty({ ...property }); 
