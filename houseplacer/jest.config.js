@@ -1,16 +1,13 @@
-
 module.exports = {
-    transform: {
-      "^.+\\.jsx?$": "babel-jest",
-    },
-    moduleNameMapper: {
-      "^axios$": "axios/dist/node/axios.cjs", 
-    },
-      moduleNameMapper: {
-        '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-      },
-        moduleNameMapper: {
-          '\\.(css|less|scss|sass)$': 'HousePlacer/houseplacer/__mocks__/styleMock.js',
-        },
-  };
+  moduleNameMapper: {
+    '\\.(css|scss|sass|less)$': '<rootDir>/fileMock.js', // Mock CSS
+    '\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/fileMock.js', // Mock images
+  },
+  testEnvironment: 'jsdom',
+};
+
+
+
+
+
   
