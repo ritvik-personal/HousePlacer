@@ -53,10 +53,10 @@ app.get('/', (req, res) => {
 });
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'register'
+    host: 'op2hpcwcbxb1t4z9.cbetxkdyhwsb.us-east-1.rds.amazonaws.com',
+    user: 'zs6ky2ikbey1n4rj',
+    password: 'l21yrz7bfdji1a7o',
+    database: 'zgyllt8xa0r8bkmv'
 });
 
 const generateRandomID = () => {
