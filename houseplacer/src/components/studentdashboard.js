@@ -3,10 +3,12 @@ import './studentdashboard.css';
 import { useNavigate } from 'react-router-dom';
 import StudentPreferenceForm from './studentpreferences';
 import Marketplace from './marketplace';
+import SavedProperties from './savedproperties';
 
 const StudentDashboard = () => {
     const[activeTab, setActiveTab] = useState("Saved Properties");
     const navigate = useNavigate();
+    const studentId = sessionStorage.getItem('studentId');
 
     const logout = () => {
         navigate("/")
@@ -17,7 +19,7 @@ const StudentDashboard = () => {
             case "Marketplace":
                 return <Marketplace></Marketplace> 
             case "Saved Properties":
-                return 
+                return <SavedProperties studentId={studentId}/>
             case "Tasks":
                 return <StudentPreferenceForm></StudentPreferenceForm>
         }

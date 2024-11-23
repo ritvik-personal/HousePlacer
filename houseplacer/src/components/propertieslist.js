@@ -6,7 +6,7 @@ const PropertiesList = ({ managerId }) => {
   const [properties, setProperties] = useState([]);
   const [opened, setOpened] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
-
+  
   const handleDelete = async (propertyId) => {
     try {
       await axios.delete(`http://localhost:8081/deleteproperty/${propertyId}`, {

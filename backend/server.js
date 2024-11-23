@@ -414,7 +414,81 @@ app.get('/matchproperties', (req, res) => {
     });
 });
 
+app.post('/saveproperty', (req, res) => {
+    const { studentId, propertyId } = req.body;
+  
+    const saveQuery = "INSERT INTO Saved_Properties (Student_ID, Property_ID) VALUES (?, ?)";
+    
+    db.query(saveQuery, [studentId, propertyId], (err, result) => {
+      if (err) {
+        console.error('Error saving property:', err);
+        return res.status(500).send({ message: 'Error saving property.' });
+      }
+  
+      res.status(200).send({ message: 'Property saved successfully.' });
+    });
+  });
 
+  app.get('/saveproperty', (req, res) => {
+    const studentId = req.query.studentId;
+  
+    const query = `
+      SELECT sp.Property_ID, p.Property_Name, p.Rent, p.No_Bedrooms, p.No_Bathrooms, p.Sq_Footage, p.Dist_Campus, 
+             p.Parking, p.Property_Description, p.Website, p.Image
+      FROM Saved_Properties sp JOIN Property p ON sp.Property_ID = p.Property_ID WHERE sp.Student_ID = ?`;
+  
+    db.query(query, [studentId], (err, results) => {
+      if (err) {
+        console.error('Error fetching saved properties:', err);
+        return res.status(500).send({ message: 'Error fetching saved properties.' });
+      }
+      res.status(200).send(results); 
+    });
+  });
+
+  app.delete('/removeproperty/:propertyId', (req, res) =>{
+    const { propertyId } = req.params;
+    const query = 'DELETE FROM Saved_Properties WHERE Property_ID = ?';
+    db.query(query, [propertyId], (err, result) => {
+      if (err) {
+        console.error('Error deleting property:', err);
+        return res.status(500).send({ message: 'Error deleting property.' });
+      }
+      res.status(200).send({ message: 'Property deleted successfully.' });
+    });
+  });
+
+
+  app.post('/addreview', (req, res) => {
+    const {propertyId, studentId, rating, description} = req.body;
+    const reviewId = generateRandomID()
+
+
+    const query = `INSERT INTO Reviews (Review_ID, Property_ID, Student_ID, Score, Description) VALUES (?, ?, ?, ?, ?)`;
+    db.query(query, [reviewId, propertyId, studentId, rating, description], (err, result) => {
+      if (err) {
+        console.error('Error inserting review:', err);
+        res.status(500).send('Error inserting review');
+        return;
+      }
+      res.status(200).send('Review added successfully');
+    });
+  });
+
+  app.get('/reviews/:propertyId', (req, res) => {
+    const { propertyId } = req.params;
+  
+    const query = `SELECT Score, Description FROM Reviews WHERE Property_ID = ?`;
+    db.query(query, [propertyId], (err, results) => {
+      if (err) {
+        console.error('Error fetching reviews:', err);
+        res.status(500).send('Error fetching reviews');
+        return;
+      }
+      res.status(200).json(results);
+    });
+  });
+  
 
 app.listen(8081, () => {
     console.log("Server is listening on port 8081");
