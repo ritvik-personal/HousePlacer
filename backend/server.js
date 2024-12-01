@@ -28,7 +28,7 @@ async function checkPassword(password, hash){
 
 const app = express();
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
     methods:["GET", "POST", "DELETE", "PUT", "OPTIONS"],
     credentials: true
 }));
@@ -331,14 +331,7 @@ app.put('/updateproperty/:propertyId', (req, res) => {
     } = studentPreferences;
 
     // Normalize weights
-    const totalWeight =
-        Bedrooms_P +
-        Bathrooms_P +
-        Rent_P +
-        Sq_ft_P +
-        DistD_P +
-        DistG_P +
-        DistC_P;
+    const totalWeight = Bedrooms_P + Bathrooms_P + Rent_P + Sq_ft_P + DistD_P + DistG_P + DistC_P;
 
     const weights = {
         bedrooms: Bedrooms_P / totalWeight,
@@ -402,17 +395,42 @@ app.put('/updateproperty/:propertyId', (req, res) => {
 };
 
 app.get('/matchproperties', (req, res) => {
-    const propertyQuery = "SELECT * FROM Property";
+  const { studentId } = req.query;
 
-    db.query(propertyQuery, (err, propertyResults) => {
-        if (err) {
-            console.error('Error retrieving properties:', err);
-            return res.status(500).send({ message: 'Error retrieving properties.' });
-        }
+  // Fetch student preferences
+  const preferenceQuery = "SELECT * FROM Preferences WHERE Student_ID = ?";
+  const propertyQuery = "SELECT * FROM Property";
 
-        res.json(propertyResults);
-    });
+  db.query(preferenceQuery, [studentId], (err, preferenceResults) => {
+      if (err || preferenceResults.length === 0) {
+          console.error('Error retrieving preferences:', err || 'No preferences found');
+          return res.status(500).send({ message: 'Error retrieving preferences or no preferences found.' });
+      }
+
+      const studentPreferences = preferenceResults[0];
+
+      // Fetch all properties
+      db.query(propertyQuery, (err, propertyResults) => {
+          if (err || propertyResults.length === 0) {
+              console.error('Error retrieving properties:', err || 'No properties found');
+              return res.status(500).send({ message: 'Error retrieving properties or no properties found.' });
+          }
+
+          // Calculate match scores for each property
+          const scoredProperties = propertyResults.map(property => {
+              const score = calculateMatchingScore(studentPreferences, property);
+              return { ...property, matchScore: score };
+          });
+
+          // Sort properties by match score in descending order
+          scoredProperties.sort((a, b) => b.matchScore - a.matchScore);
+
+          // Return top matches
+          res.status(200).send(scoredProperties);
+      });
+  });
 });
+
 
 app.post('/saveproperty', (req, res) => {
     const { studentId, propertyId } = req.body;
