@@ -71,11 +71,11 @@ const PropertiesList = ({ managerId }) => {
 
 console.log('Properties:', properties);
   return (
-    <Container>
+    <Container sx={{padding:10}}>
       <Grid2 container spacing={3}>
         {properties.map((property) => (
           <Grid2 item xs={12} sm={6} md={4} key={property.Property_ID}>
-            <Card>
+            <Card sx={{padding:2}}>
               <CardMedia
                 component="img"
                 height="200"
@@ -91,7 +91,7 @@ console.log('Properties:', properties);
                 <Typography variant="body2">Bathrooms: {property.No_Bathrooms}</Typography>
                 <Typography variant="body2">Rent: ${property.Rent}</Typography>
               </CardContent>
-              <Button variant="contained" color="primary" onClick = {() => handleDetails(property)}>
+              <Button variant="contained" color="primary" onClick = {() => handleDetails(property)} sx={{mr:1}}>
                 View Details
               </Button>
               <Button variant="contained" color="secondary" key={property.Property_ID}  onClick={() => handleDelete(property.Property_ID)}>
