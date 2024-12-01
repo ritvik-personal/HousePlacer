@@ -107,3 +107,13 @@
 .toRegister:hover {
   background-color: #25005a; 
 }
+
+.input.error input {
+  border: 2px solid red;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}

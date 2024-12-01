@@ -119,28 +119,35 @@ app.post('/login', async (req, res) => {
     }
 
     db.query(query, [username], async (err, result) => {
-        if (err) {
-            console.error('Error querying data:', err);
-            return res.status(500).send({ message: "Error querying data." });
-        }
+      if (err) {
+          console.error('Error querying data:', err);
+          return res.status(500).send({ message: "Error querying data." });
+      }
 
-        if (result.length > 0) {
-            const hashedPassword = result[0].password.toString('utf-8');
-            const isMatch = await checkPassword(password, hashedPassword);
-
-            if (isMatch) {
-                req.session.user = {
-                    id: result[0].ID, 
-                    username: result[0].username,
-                };
-                return res.send({ message: "Success", userId: result[0].ID });
-            } else {
-                return res.send({ message: "Wrong password" });
-            }
-        } else {
-            return res.send({ message: "Wrong username or password" });
-        }
-    });
+      if (result.length > 0) {
+          const hashedPassword = result[0].password.toString('utf-8');
+          try {
+              const isMatch = await bcrypt.compare(password, hashedPassword);
+              if (isMatch) {
+                  req.session.user = {
+                      id: result[0].ID,
+                      username: result[0].username,
+                  };
+                  return res.send({ message: "Success", userId: result[0].ID });
+              } 
+              else {
+                  return res.status(401).send({ message: "Incorrect password." });
+              }
+          } 
+          catch (error) {
+              console.error('Error in comparison:', error);
+              return res.status(500).send({ message: "Error during password comparison." });
+          }
+      } 
+      else {
+          return res.status(404).send({ message: "Username not found." });
+      }
+  });
 });
 
 
