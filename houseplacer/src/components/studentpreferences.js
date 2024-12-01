@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   TextField,
   Button,
   Container,
   Typography,
-  Grid2,
+  Grid,
   Box,
   Checkbox,
   FormControlLabel,
-  Select,
   MenuItem,
 } from '@mui/material';
 
@@ -38,7 +39,6 @@ const StudentPreferenceForm = () => {
 
   const studentId = sessionStorage.getItem("studentId");
   
-
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -119,8 +119,6 @@ const StudentPreferenceForm = () => {
     return Object.keys(formErrors).length === 0;
   };
 
-  
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
@@ -146,11 +144,37 @@ const StudentPreferenceForm = () => {
       }).then((response) => {
         if(response.data.message){
           console.log("Preferences logged successfully.");
+          toast.success("Preferences submitted successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
         }
-      })
+      }).catch((error) => {
+        console.error("Error submitting preferences:", error);
+        toast.error("Failed to submit preferences. Please try again.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      });
+    } else {
+      toast.error("Please fill out all required fields.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
-
 
   const savePreferences = async () => {
     try {
@@ -180,8 +204,24 @@ const StudentPreferenceForm = () => {
       );
   
       console.log('Preferences updated successfully:', response.data);
+      toast.success("Preferences saved successfully!", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     } catch (error) {
       console.error('Error updating preferences:', error);
+      toast.error("Failed to save preferences. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -219,6 +259,14 @@ const StudentPreferenceForm = () => {
           }
         } catch (error) {
           console.error('Error fetching preferences:', error);
+          toast.error("Failed to load previous preferences.", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
         }
       }
     };
@@ -227,9 +275,9 @@ const StudentPreferenceForm = () => {
   }, []);
   
   
-
   return (
-    <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+    <Container  sx={{ mt: 5,ml:8,mr:0, width: '100%' }}>
+      <ToastContainer />
       <Box
         sx={{
           boxShadow: 3,
@@ -249,9 +297,9 @@ const StudentPreferenceForm = () => {
         </Typography>
 
         <form onSubmit={handleSubmit}>
-          <Grid2 container spacing={2}>
-            {/* Bedrooms */}
-            <Grid2 item xs={12} sm={6}>
+          <Grid container spacing={3}>
+            {/* Main Form Fields */}
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="bedrooms"
@@ -263,11 +311,10 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.bedrooms}
                 helperText={errors.bedrooms}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
-
-            {/* Bathrooms */}
-            <Grid2 item xs={12} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="bathrooms"
@@ -279,11 +326,11 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.bathrooms}
                 helperText={errors.bathrooms}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
+            </Grid>
 
-            {/* Rent */}
-            <Grid2 item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="rent"
@@ -295,11 +342,10 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.rent}
                 helperText={errors.rent}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
-
-            {/* Square Footage */}
-            <Grid2 item xs={12} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="squareFootage"
@@ -311,11 +357,11 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.squareFootage}
                 helperText={errors.squareFootage}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
+            </Grid>
 
-            {/* Distance to Campus */}
-            <Grid2 item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="distanceToCampus"
@@ -327,11 +373,10 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.distanceToCampus}
                 helperText={errors.distanceToCampus}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
-
-            {/* Distance to Dining */}
-            <Grid2 item xs={12} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="distanceToDining"
@@ -343,11 +388,10 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.distanceToDining}
                 helperText={errors.distanceToDining}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
-
-            {/* Distance to Gym */}
-            <Grid2 item xs={12} sm={6}>
+            </Grid>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="distanceToGym"
@@ -359,11 +403,12 @@ const StudentPreferenceForm = () => {
                 onChange={handleChange}
                 error={!!errors.distanceToGym}
                 helperText={errors.distanceToGym}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
+            </Grid>
 
             {/* Parking Requirement */}
-            <Grid2 item xs={12}>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -374,17 +419,17 @@ const StudentPreferenceForm = () => {
                 }
                 label="Parking Required"
               />
-            </Grid2>
+            </Grid>
 
             {/* Priority Rankings */}
-            <Grid2 item xs={12}>
-              <Typography variant="h6">
+            <Grid item xs={12}>
+              <Typography variant="h6" sx={{ mb: 2 }}>
                 Priority (how important each factor is)
               </Typography>
-            </Grid2>
+            </Grid>
 
             {Object.keys(formData.priorityRankings).map((key) => (
-              <Grid2 item xs={12} sm={6} key={key}>
+              <Grid item xs={12} sm={6} md={4} key={key}>
                 <TextField
                   select
                   fullWidth
@@ -398,6 +443,7 @@ const StudentPreferenceForm = () => {
                   helperText={
                     errors.priorityRankings && errors.priorityRankings[key]
                   }
+                  sx={{ mb: 2 }}
                 >
                   {[1, 2, 3, 4, 5].map((option) => (
                     <MenuItem key={option} value={option}>
@@ -405,11 +451,11 @@ const StudentPreferenceForm = () => {
                     </MenuItem>
                   ))}
                 </TextField>
-              </Grid2>
+              </Grid>
             ))}
 
             {/* Additional Notes */}
-            <Grid2 item xs={12}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 name="additionalNotes"
@@ -420,21 +466,34 @@ const StudentPreferenceForm = () => {
                 variant="outlined"
                 value={formData.additionalNotes}
                 onChange={handleChange}
+                sx={{ mb: 2 }}
               />
-            </Grid2>
+            </Grid>
 
-            {/* Submit Button */}
-            <Grid2 item xs={12}>
-            <Button variant="contained" color="secondary" onClick={() => savePreferences()}>
-              Save Preferences
-            </Button>
-            </Grid2>
-            <Grid2>
-              <Button variant="contained" color="primary" type="submit">
-                Submit Preferences
-              </Button>
-            </Grid2>
-          </Grid2>
+            {/* Submit Buttons */}
+            <Grid item xs={12} container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Button 
+                  fullWidth 
+                  variant="contained" 
+                  color="secondary" 
+                  onClick={() => savePreferences()}
+                >
+                  Save Preferences
+                </Button>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Button 
+                  fullWidth 
+                  variant="contained" 
+                  color="primary" 
+                  type="submit"
+                >
+                  Submit Preferences
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
         </form>
       </Box>
     </Container>
