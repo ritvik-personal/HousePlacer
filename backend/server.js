@@ -108,6 +108,7 @@ app.get('/login', (req, res) =>{
         res.send({loggedIn:false}) 
     }
 })
+
 app.post('/login', async (req, res) => {
     const { classification, username, password } = req.body;
     let query;
@@ -125,7 +126,8 @@ app.post('/login', async (req, res) => {
         }
 
         if (result.length > 0) {
-            const hashedPassword = await hashPassword(password);
+            const hashedPassword = result[0].password.toString('utf-8');
+            console.log(hashedPassword);
             const isMatch = await checkPassword(password, hashedPassword);
 
             if (isMatch) {
