@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   TextField,
   Button,
@@ -26,7 +28,7 @@ const PropertyForm = () => {
     distanceToCampus: '',
     parkingAvailable: false,
     propertyDescription: '',
-    website: '', // New field for website
+    website: '',
     image: null,
   });
 
@@ -107,7 +109,7 @@ const PropertyForm = () => {
     e.preventDefault();
     if (validateForm()) {
       const formDataToSend = new FormData();
-  
+
       formDataToSend.append("managerId", managerId);
       formDataToSend.append("property_name", formData.name);
       formDataToSend.append("no_bedrooms", formData.bedrooms);
@@ -119,28 +121,45 @@ const PropertyForm = () => {
       formDataToSend.append("property_description", formData.propertyDescription);
       formDataToSend.append("rent", formData.rent);
       formDataToSend.append("website", formData.website);
-  
+
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
-  
+
       axios.post("http://localhost:8081/newproperty", formDataToSend, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
+        headers: { "Content-Type": "multipart/form-data" },
+      })
         .then((response) => {
           if (response.data.message) {
             console.log("Property added successfully.");
+            toast.success("Property added successfully!", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
           }
         })
         .catch((err) => {
           console.error("Error submitting form:", err);
+          toast.error("Error submitting form! Please try again.", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
         });
     }
   };
-  
+
 
   return (
     <Container maxWidth="md" sx={{ mt: 5, mb: 5 }}>
+      <ToastContainer />
       <Box
         sx={{
           boxShadow: 3,
