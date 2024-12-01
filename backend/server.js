@@ -125,7 +125,7 @@ app.post('/login', async (req, res) => {
         }
 
         if (result.length > 0) {
-            const hashedPassword = await hashPassword(password);
+            const hashedPassword = result[0].password.toString('utf-8');
             const isMatch = await checkPassword(password, hashedPassword);
 
             if (isMatch) {
