@@ -127,7 +127,7 @@ const Marketplace = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth={false} sx={{ width : '100%', py: 4 }}>
       {/* Search Bar */}
       <Box
         sx={{
@@ -161,7 +161,7 @@ const Marketplace = () => {
           startIcon={<Search />}
           sx={{
             minWidth: '120px',
-            height: '48px' // Set the same height as the search bar
+            height: '48px' 
           }}
         >
           Search
