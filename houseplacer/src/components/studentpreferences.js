@@ -43,11 +43,23 @@ const StudentPreferenceForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    if (
+      ['bedrooms', 'bathrooms', 'rent', 'squareFootage', 'distanceToCampus', 'distanceToDining', 'distanceToGym'].includes(name) &&
+      parseFloat(value) < 0
+    ) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: 'Value cannot be negative',
+      }));
+      return;
+    }
+  
     setFormData({
       ...formData,
       [name]: value,
     });
-
+  
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -86,35 +98,61 @@ const StudentPreferenceForm = () => {
 
   const validateForm = () => {
     let formErrors = {};
-    if (!formData.bedrooms)
+    
+    
+    if (!formData.bedrooms) {
       formErrors.bedrooms = 'Number of bedrooms is required';
-    if (!formData.bathrooms)
+    } else if (parseInt(formData.bedrooms) < 0) {
+      formErrors.bedrooms = 'Number of bedrooms cannot be negative';
+    }
+    
+    if (!formData.bathrooms) {
       formErrors.bathrooms = 'Number of bathrooms is required';
-    if (!formData.rent) formErrors.rent = 'Rent is required';
-    if (!formData.squareFootage)
+    } else if (parseInt(formData.bathrooms) < 0) {
+      formErrors.bathrooms = 'Number of bathrooms cannot be negative';
+    }
+    
+    if (!formData.rent) {
+      formErrors.rent = 'Rent is required';
+    } else if (parseFloat(formData.rent) < 0) {
+      formErrors.rent = 'Rent cannot be negative';
+    }
+    
+    if (!formData.squareFootage) {
       formErrors.squareFootage = 'Square footage is required';
-    if (!formData.distanceToCampus)
+    } else if (parseFloat(formData.squareFootage) < 0) {
+      formErrors.squareFootage = 'Square footage cannot be negative';
+    }
+    
+    if (!formData.distanceToCampus) {
       formErrors.distanceToCampus = 'Distance to campus is required';
-    if (!formData.distanceToDining)
+    } else if (parseFloat(formData.distanceToCampus) < 0) {
+      formErrors.distanceToCampus = 'Distance to campus cannot be negative';
+    }
+    
+    if (!formData.distanceToDining) {
       formErrors.distanceToDining = 'Distance to dining is required';
-    if (!formData.distanceToGym)
+    } else if (parseFloat(formData.distanceToDining) < 0) {
+      formErrors.distanceToDining = 'Distance to dining cannot be negative';
+    }
+    
+    if (!formData.distanceToGym) {
       formErrors.distanceToGym = 'Distance to gym is required';
-
-    // Validate priority rankings
+    } else if (parseFloat(formData.distanceToGym) < 0) {
+      formErrors.distanceToGym = 'Distance to gym cannot be negative';
+    }
+  
     const priorityErrors = {};
     Object.keys(formData.priorityRankings).forEach((key) => {
       if (!formData.priorityRankings[key]) {
-        priorityErrors[key] = `Priority for ${key.replace(
-          /([A-Z])/g,
-          ' $1'
-        )} is required`;
+        priorityErrors[key] = `Priority for ${key.replace(/([A-Z])/g, ' $1')} is required`;
       }
     });
-
+  
     if (Object.keys(priorityErrors).length > 0) {
       formErrors.priorityRankings = priorityErrors;
     }
-
+  
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0;
   };

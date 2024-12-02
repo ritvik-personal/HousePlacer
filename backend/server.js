@@ -228,21 +228,78 @@ app.post('/newproperty', upload.single('image'), (req, res) => {
     );
   });
 
-app.post('/newpreference', (req, res) => {
+  app.post('/newpreference', (req, res) => {
+    const {
+        student_id, 
+        no_bedrooms, no_bedrooms_priority, 
+        no_bathrooms, no_bathrooms_priority, 
+        budget, budget_priority, 
+        sq_footage, sq_footage_priority, 
+        dist_dining, dist_dining_priority, 
+        dist_gym, dist_gym_priority, 
+        dist_campus, dist_campus_priority, 
+        parking, notes
+    } = req.body;
 
-    const {student_id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes} = req.body;
-
-    query = "INSERT INTO Preferences (Student_ID, Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"; 
-
-    db.query(query, [student_id, no_bedrooms, no_bedrooms_priority, no_bathrooms, no_bathrooms_priority, budget, budget_priority, sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, parking, notes], (err, result) => {
+    const checkQuery = "SELECT * FROM Preferences WHERE Student_ID = ?";
+    
+    db.query(checkQuery, [student_id], (err, result) => {
         if (err) {
-            console.error('Error inserting data:', err);
-            return res.status(500).send({ message: "Error inserting data." });
+            console.error('Error checking existing preferences:', err);
+            return res.status(500).send({ message: "Error checking existing preferences." });
         }
-        res.status(201).send({ message: "Property added successfully", userId: student_id });
-    });
 
-})
+        if (result.length > 0) {
+            const deleteQuery = "DELETE FROM Preferences WHERE Student_ID = ?";
+            
+            db.query(deleteQuery, [student_id], (err, result) => {
+                if (err) {
+                    console.error('Error deleting existing preference:', err);
+                    return res.status(500).send({ message: "Error deleting existing preference." });
+                }
+                
+                const insertQuery = `
+                    INSERT INTO Preferences 
+                    (Student_ID, Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, 
+                    Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+                db.query(insertQuery, [
+                    student_id, no_bedrooms, no_bedrooms_priority, 
+                    no_bathrooms, no_bathrooms_priority, budget, budget_priority, 
+                    sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, 
+                    dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, 
+                    parking, notes
+                ], (err, result) => {
+                    if (err) {
+                        console.error('Error inserting new preference:', err);
+                        return res.status(500).send({ message: "Error inserting new preference." });
+                    }
+                    res.status(201).send({ message: "Preferences updated successfully", userId: student_id });
+                });
+            });
+        } 
+        else {
+            const insertQuery = `INSERT INTO Preferences (Student_ID, Bedrooms, Bedrooms_P, Bathrooms, Bathrooms_P, Rent, Rent_P, Sq_ft, Sq_ft_P, DistD, DistD_P, DistG, DistG_P, DistC, DistC_P, Parking, Notes)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+            db.query(insertQuery, [
+                student_id, no_bedrooms, no_bedrooms_priority, 
+                no_bathrooms, no_bathrooms_priority, budget, budget_priority, 
+                sq_footage, sq_footage_priority, dist_dining, dist_dining_priority, 
+                dist_gym, dist_gym_priority, dist_campus, dist_campus_priority, 
+                parking, notes
+            ], (err, result) => {
+                if (err) {
+                    console.error('Error inserting new preference:', err);
+                    return res.status(500).send({ message: "Error inserting new preference." });
+                }
+                res.status(201).send({ message: "Preferences added successfully", userId: student_id });
+            });
+        }
+    });
+});
+
 
 app.get('/getpreferences', (req, res) => {
     const { studentId } = req.query;
