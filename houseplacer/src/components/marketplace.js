@@ -46,17 +46,23 @@ const Marketplace = () => {
 
   useEffect(() => {
     const fetchMatchedProperties = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:8081/matchproperties'
-        );
-        console.log('Matched Properties:', response.data);
-        setProperties(response.data);
-        setDisplayedProperties(response.data);
-      } catch (error) {
-        console.error('Error fetching matched properties:', error);
+      const studentId = sessionStorage.getItem("studentId"); // Retrieve studentId from sessionStorage
+  
+      if (!studentId) {
+          console.error('Student ID is missing. Ensure the user is logged in.');
+          return;
       }
-    };
+  
+      try {
+          const response = await axios.get(`http://localhost:8081/matchproperties/${studentId}`);
+          console.log('Matched Properties:', response.data);
+          setProperties(response.data);
+          setDisplayedProperties(response.data);
+      } catch (error) {
+          console.error('Error fetching matched properties:', error);
+      }
+  };
+  
 
     fetchMatchedProperties();
   }, []);

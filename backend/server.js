@@ -28,7 +28,7 @@ async function checkPassword(password, hash){
 
 const app = express();
 app.use(cors({
-  origin: ["http://localhost:3000","http://127.0.0.1:3000"],
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
     methods:["GET", "POST", "DELETE", "PUT", "OPTIONS"],
     credentials: true
 }));
@@ -327,100 +327,160 @@ app.put('/updateproperty/:propertyId', (req, res) => {
  
   
   const calculateMatchingScore = (studentPreferences, property) => {
-    // Extract priorities from student preferences
-    const {
-        Bedrooms_P,
-        Bathrooms_P,
-        Rent_P,
-        Sq_ft_P,
-        DistD_P,
-        DistG_P,
-        DistC_P,
-    } = studentPreferences;
+    try {
+        // Extract and log preferences and property data
+        console.log('Calculating score for property:', property);
+        console.log('With preferences:', studentPreferences);
 
-    // Normalize weights
-    const totalWeight =
-        Bedrooms_P +
-        Bathrooms_P +
-        Rent_P +
-        Sq_ft_P +
-        DistD_P +
-        DistG_P +
-        DistC_P;
+        const {
+            Bedrooms_P,
+            Bathrooms_P,
+            Rent_P,
+            Sq_ft_P,
+            DistD_P,
+            DistG_P,
+            DistC_P,
+        } = studentPreferences;
 
-    const weights = {
-        bedrooms: Bedrooms_P / totalWeight,
-        bathrooms: Bathrooms_P / totalWeight,
-        rent: Rent_P / totalWeight,
-        squareFootage: Sq_ft_P / totalWeight,
-        distanceDining: DistD_P / totalWeight,
-        distanceGym: DistG_P / totalWeight,
-        distanceCampus: DistC_P / totalWeight,
-    };
+        // Normalize weights
+        const totalWeight = Bedrooms_P + Bathrooms_P + Rent_P + Sq_ft_P + DistD_P + DistG_P + DistC_P;
 
-    let score = 0;
-
-    // Bedrooms Match
-    if (property.No_Bedrooms === studentPreferences.Bedrooms) {
-        score += weights.bedrooms;
-    } else if (Math.abs(property.No_Bedrooms - studentPreferences.Bedrooms) === 1) {
-        score += weights.bedrooms / 2; // Partial match
-    }
-
-    // Bathrooms Match
-    if (property.No_Bathrooms === studentPreferences.Bathrooms) {
-        score += weights.bathrooms;
-    } else if (Math.abs(property.No_Bathrooms - studentPreferences.Bathrooms) === 1) {
-        score += weights.bathrooms / 2; // Partial match
-    }
-
-    // Rent Match
-    if (property.Rent <= studentPreferences.Rent) {
-        score += weights.rent;
-    }
-
-    // Square Footage Match
-    if (property.Sq_Footage >= studentPreferences.Sq_ft) {
-        score += weights.squareFootage;
-    } else if (property.Sq_Footage >= studentPreferences.Sq_ft * 0.9) {
-        score += weights.squareFootage / 2; // Partial match for close sizes
-    }
-
-    // Distance to Dining Match
-    if (property.Dist_Dining <= studentPreferences.DistD) {
-        score += weights.distanceDining;
-    }
-
-    // Distance to Gym Match
-    if (property.Dist_Gym <= studentPreferences.DistG) {
-        score += weights.distanceGym;
-    }
-
-    // Distance to Campus Match
-    if (property.Dist_Campus <= studentPreferences.DistC) {
-        score += weights.distanceCampus;
-    }
-
-    // Parking Match
-    if (property.Parking === studentPreferences.Parking) {
-        score += 1; // Full score for parking match
-    }
-
-    return score;
-};
-
-app.get('/matchproperties', (req, res) => {
-    const propertyQuery = "SELECT * FROM Property";
-
-    db.query(propertyQuery, (err, propertyResults) => {
-        if (err) {
-            console.error('Error retrieving properties:', err);
-            return res.status(500).send({ message: 'Error retrieving properties.' });
+        if (totalWeight === 0) {
+            console.error('Total weight is 0, invalid preferences:', studentPreferences);
+            return 0;
         }
 
-        res.json(propertyResults);
-    });
+        const weights = {
+            bedrooms: Bedrooms_P / totalWeight,
+            bathrooms: Bathrooms_P / totalWeight,
+            rent: Rent_P / totalWeight,
+            squareFootage: Sq_ft_P / totalWeight,
+            distanceDining: DistD_P / totalWeight,
+            distanceGym: DistG_P / totalWeight,
+            distanceCampus: DistC_P / totalWeight,
+        };
+
+        let score = 0;
+
+        // Bedrooms Match
+        if (property.No_Bedrooms === studentPreferences.Bedrooms) {
+            score += weights.bedrooms;
+        } else if (Math.abs(property.No_Bedrooms - studentPreferences.Bedrooms) === 1) {
+            score += weights.bedrooms / 2; // Partial match
+        }
+
+        // Bathrooms Match
+        if (property.No_Bathrooms === studentPreferences.Bathrooms) {
+            score += weights.bathrooms;
+        } else if (Math.abs(property.No_Bathrooms - studentPreferences.Bathrooms) === 1) {
+            score += weights.bathrooms / 2; // Partial match
+        }
+
+        // Rent Match
+        if (property.Rent <= studentPreferences.Rent) {
+            score += weights.rent;
+        }
+
+        // Square Footage Match
+        if (property.Sq_Footage >= studentPreferences.Sq_ft) {
+            score += weights.squareFootage;
+        } else if (property.Sq_Footage >= studentPreferences.Sq_ft * 0.9) {
+            score += weights.squareFootage / 2; // Partial match for close sizes
+        }
+
+        // Distance to Dining Match
+        if (property.Dist_Dining <= studentPreferences.DistD) {
+            score += weights.distanceDining;
+        }
+
+        // Distance to Gym Match
+        if (property.Dist_Gym <= studentPreferences.DistG) {
+            score += weights.distanceGym;
+        }
+
+        // Distance to Campus Match
+        if (property.Dist_Campus <= studentPreferences.DistC) {
+            score += weights.distanceCampus;
+        }
+
+        // Parking Match
+        if (property.Parking === studentPreferences.Parking) {
+            score += 1; // Full score for parking match
+        }
+
+        return score;
+    } catch (error) {
+        console.error('Error in calculateMatchingScore:', error);
+        return 0;
+    }
+};
+
+
+app.get('/matchproperties/:studentId', (req, res) => {
+  const { studentId } = req.params;
+
+  if (!studentId) {
+      console.error('Student ID is missing in the request.');
+      return res.status(400).send({ message: 'Student ID is required.' });
+  }
+
+  const preferenceQuery = "SELECT * FROM Preferences WHERE Student_ID = ?";
+  const propertyQuery = "SELECT * FROM Property";
+
+  // Fetch student preferences
+  db.query(preferenceQuery, [studentId], (err, preferenceResults) => {
+      if (err) {
+          console.error('Error retrieving preferences:', err);
+          return res.status(500).send({ message: 'Error retrieving preferences.' });
+      }
+
+      if (preferenceResults.length === 0) {
+          console.error('No preferences found for student ID:', studentId);
+          return res.status(404).send({ message: 'No preferences found.' });
+      }
+
+      const studentPreferences = preferenceResults[0];
+      console.log('Student Preferences:', studentPreferences);
+
+      // Fetch all properties
+      db.query(propertyQuery, (err, propertyResults) => {
+          if (err) {
+              console.error('Error retrieving properties:', err);
+              return res.status(500).send({ message: 'Error retrieving properties.' });
+          }
+
+          if (propertyResults.length === 0) {
+              console.error('No properties found.');
+              return res.status(404).send({ message: 'No properties found.' });
+          }
+
+          console.log('Number of properties retrieved:', propertyResults.length);
+
+          try {
+              // Calculate match scores for each property
+              const scoredProperties = propertyResults.map(property => {
+                  const matchScore = calculateMatchingScore(studentPreferences, property);
+                  console.log(`Property ID: ${property.Property_ID}, Match Score: ${matchScore}`); // Debug log
+                  return { ...property, matchScore }; // Add match score to the property
+              });
+
+              // Sort properties by match score (descending)
+              scoredProperties.sort((a, b) => b.matchScore - a.matchScore);
+
+              // Log sorted properties with scores
+              console.log('Sorted Properties by Match Score:', scoredProperties);
+
+              // Return the sorted properties
+              res.status(200).json(scoredProperties);
+          } catch (calculationError) {
+              console.error('Error calculating match scores:', calculationError);
+              res.status(500).send({ message: 'Error calculating match scores.' });
+          }
+      });
+  });
 });
+
+
 
 app.post('/saveproperty', (req, res) => {
     const { studentId, propertyId } = req.body;
