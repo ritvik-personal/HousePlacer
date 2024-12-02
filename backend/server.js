@@ -409,18 +409,71 @@ app.put('/updateproperty/:propertyId', (req, res) => {
     return score;
 };
 
-app.get('/matchproperties', (req, res) => {
-    const propertyQuery = "SELECT * FROM Property";
+app.get('/matchproperties/:studentId', (req, res) => {
+  const { studentId } = req.params;
 
-    db.query(propertyQuery, (err, propertyResults) => {
-        if (err) {
-            console.error('Error retrieving properties:', err);
-            return res.status(500).send({ message: 'Error retrieving properties.' });
-        }
+  if (!studentId) {
+      console.error('Student ID is missing in the request.');
+      return res.status(400).send({ message: 'Student ID is required.' });
+  }
 
-        res.json(propertyResults);
-    });
+  const preferenceQuery = "SELECT * FROM Preferences WHERE Student_ID = ?";
+  const propertyQuery = "SELECT * FROM Property";
+
+  // Fetch student preferences
+  db.query(preferenceQuery, [studentId], (err, preferenceResults) => {
+      if (err) {
+          console.error('Error retrieving preferences:', err);
+          return res.status(500).send({ message: 'Error retrieving preferences.' });
+      }
+
+      if (preferenceResults.length === 0) {
+          console.error('No preferences found for student ID:', studentId);
+          return res.status(404).send({ message: 'No preferences found.' });
+      }
+
+      const studentPreferences = preferenceResults[0];
+      console.log('Student Preferences:', studentPreferences);
+
+      // Fetch all properties
+      db.query(propertyQuery, (err, propertyResults) => {
+          if (err) {
+              console.error('Error retrieving properties:', err);
+              return res.status(500).send({ message: 'Error retrieving properties.' });
+          }
+
+          if (propertyResults.length === 0) {
+              console.error('No properties found.');
+              return res.status(404).send({ message: 'No properties found.' });
+          }
+
+          console.log('Number of properties retrieved:', propertyResults.length);
+
+          try {
+              // Calculate match scores for each property
+              const scoredProperties = propertyResults.map(property => {
+                  const matchScore = calculateMatchingScore(studentPreferences, property);
+                  console.log(`Property ID: ${property.Property_ID}, Match Score: ${matchScore}`); // Debug log
+                  return { ...property, matchScore }; // Add match score to the property
+              });
+
+              // Sort properties by match score (descending)
+              scoredProperties.sort((a, b) => b.matchScore - a.matchScore);
+
+              // Log sorted properties with scores
+              console.log('Sorted Properties by Match Score:', scoredProperties);
+
+              // Return the sorted properties
+              res.status(200).json(scoredProperties);
+          } catch (calculationError) {
+              console.error('Error calculating match scores:', calculationError);
+              res.status(500).send({ message: 'Error calculating match scores.' });
+          }
+      });
+  });
 });
+
+
 
 app.post('/saveproperty', (req, res) => {
     const { studentId, propertyId } = req.body;
