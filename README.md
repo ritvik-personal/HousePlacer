@@ -2,6 +2,9 @@
 Our names are Ritvik Sajja, Sanchit Gupta, Aneesh Gadgil.
 This is our Housing Web Application to help connect Students and Real Estate Managers to help the student find the perfect home near campus.
 
+
+Basic Users Manual
+
 To start up the backend, you should type:
 "cd backend"
 "npm start"
@@ -96,3 +99,18 @@ what their property looks like in the perspective of the students.
 
 To exit the manager dashboard/account at any point, the user can select the "Logout" button on their taskbar, which would return them
 to our start/registration page.
+
+
+
+Omissions and Status of Bugs:
+It should be noted that our code does not contain any bugs across the functionality that we were able to cover for the final submission.
+However, we do have some omissions from our SRS that we would hopefully like to implement at some point in the future:
+
+1 - Being able to archive properties on the manager dashboard. When a property is no longer vacant, but has only been leased out for 
+around 6 months - 1 year, instead of having to delete it, the manager should be able to archive it. This functionality removes it 
+from the marketplace, but keeps it in the manager view, within a different section, titled "Archived".
+
+2 - Being able to report a property for fraudulent activity from the student view. For example, if a student has an issue with a property, 
+like the manager seems suspicious, there should be a button included on the card view that opens a report dialog. The report dialog should
+include space for the student to include information as to why they would like to report that specific property. Upon submission, that 
+report should go be sent to an administrator email for review.
