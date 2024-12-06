@@ -2,6 +2,16 @@
 Our names are Ritvik Sajja, Sanchit Gupta, Aneesh Gadgil.
 This is our Housing Web Application to help connect Students and Real Estate Managers to help the student find the perfect home near campus.
 
+To start up the backend, you should type:
+"cd backend"
+"npm start"
+
+To start up the frontend, you should type:
+"cd frontend"
+"npm start"
+
+After starting up the frontend, you can access the application:
+
 Start Page: 
 Upon running the application, the user should be able to see our home page - a registration page. 
 Depending on your history with our application, you may take any of the following steps:
