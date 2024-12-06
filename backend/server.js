@@ -76,6 +76,7 @@ db.connect((err) => {
     }
     console.log('Connected to the MySQL database.');
 });
+module.exports = { app, db };
 
 app.post('/register', async (req, res) => {
     const { classification, email, username, password } = req.body;
